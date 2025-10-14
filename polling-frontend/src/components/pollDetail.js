@@ -25,24 +25,25 @@ import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
+import { useTheme } from "../theme/context";
 
 // ---------- STYLED COMPONENTS ----------
 
 // Main background container with animated gradients
-const StyledBox = styled(Box)({
+const StyledBox = styled(Box)(({ themeColors }) => ({
   minHeight: "100vh",
-  background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)",
+  background: themeColors.bgPrimary,
   position: "relative",
   overflow: "hidden",
   padding: "60px 0",
+  transition: "background 0.3s ease",
 
   "&::before": {
     content: '""',
     position: "absolute",
     width: "800px",
     height: "800px",
-    background:
-      "radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%)",
+    background: themeColors.orbPrimary,
     borderRadius: "50%",
     top: "-300px",
     right: "-200px",
@@ -53,8 +54,7 @@ const StyledBox = styled(Box)({
     position: "absolute",
     width: "600px",
     height: "600px",
-    background:
-      "radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, transparent 70%)",
+    background: themeColors.orbSecondary,
     borderRadius: "50%",
     bottom: "-200px",
     left: "-150px",
@@ -66,27 +66,27 @@ const StyledBox = styled(Box)({
     "0%, 100%": { transform: "translate(0, 0) scale(1)" },
     "50%": { transform: "translate(50px, 30px) scale(1.1)" },
   },
-});
+}));
 
 // Subtle background grid overlay
-const GridPattern = styled(Box)({
+const GridPattern = styled(Box)(({ themeColors }) => ({
   position: "absolute",
   inset: 0,
-  backgroundImage: `linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px)`,
+  backgroundImage: `linear-gradient(${themeColors.gridColor} 1px, transparent 1px),
+                    linear-gradient(90deg, ${themeColors.gridColor} 1px, transparent 1px)`,
   backgroundSize: "50px 50px",
   zIndex: 0,
-});
+}));
 
 // Back button in the top-left corner
-const BackButton = styled(IconButton)({
+const BackButton = styled(IconButton)(({ themeColors }) => ({
   position: "absolute",
   top: "80px",
   left: "40px",
-  background: "rgba(255, 255, 255, 0.05)",
+  background: themeColors.bgGlass,
   backdropFilter: "blur(20px)",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
-  color: "#cbd5e1",
+  border: `1px solid ${themeColors.borderPrimary}`,
+  color: themeColors.textSecondary,
   zIndex: 2,
   transition: "all 0.3s ease",
   "&:hover": {
@@ -94,7 +94,7 @@ const BackButton = styled(IconButton)({
     transform: "translateX(-5px)",
     color: "#a5b4fc",
   },
-});
+}));
 
 // Poll title and description header
 const HeaderContainer = styled(Box)({
@@ -117,42 +117,43 @@ const IconContainer = styled(Box)({
   },
 });
 
-const Title = styled(Typography)({
+const Title = styled(Typography)(({ themeColors }) => ({
   fontWeight: "800",
   fontSize: "38px",
-  color: "#f1f5f9",
+  color: themeColors.textPrimary,
   marginBottom: "16px",
   lineHeight: "1.3",
   maxWidth: "800px",
   margin: "0 auto 16px",
-});
+  transition: "color 0.3s ease",
+}));
 
-const Subtitle = styled(Typography)({
-  color: "#94a3b8",
+const Subtitle = styled(Typography)(({ themeColors }) => ({
+  color: themeColors.textSecondary,
   fontSize: "16px",
   fontWeight: "400",
-});
+  transition: "color 0.3s ease",
+}));
 
 // Card for poll content
-const StyledCard = styled(Card)({
+const StyledCard = styled(Card)(({ themeColors }) => ({
   borderRadius: "24px",
-  background: "rgba(255, 255, 255, 0.03)",
+  background: themeColors.bgCard,
   backdropFilter: "blur(20px)",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
+  border: `1px solid ${themeColors.borderPrimary}`,
   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
   position: "relative",
   zIndex: 1,
   overflow: "visible",
-});
+  transition: "all 0.3s ease",
+}));
 
 // Each option box (highlighted when selected)
-const OptionCard = styled(Box)(({ selected }) => ({
-  background: selected
-    ? "linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.15) 100%)"
-    : "rgba(255, 255, 255, 0.03)",
+const OptionCard = styled(Box)(({ selected, themeColors }) => ({
+  background: selected ? themeColors.winnerBg : themeColors.bgCard,
   border: selected
-    ? "2px solid rgba(99, 102, 241, 0.6)"
-    : "2px solid rgba(255, 255, 255, 0.1)",
+    ? `2px solid ${themeColors.winnerBorder}`
+    : `2px solid ${themeColors.borderPrimary}`,
   borderRadius: "16px",
   padding: "20px 24px",
   marginBottom: "16px",
@@ -160,9 +161,7 @@ const OptionCard = styled(Box)(({ selected }) => ({
   cursor: "pointer",
   position: "relative",
   "&:hover": {
-    background: selected
-      ? "linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)"
-      : "rgba(255, 255, 255, 0.06)",
+    background: selected ? themeColors.winnerBgHover : themeColors.bgCardHover,
     borderColor: selected
       ? "rgba(99, 102, 241, 0.8)"
       : "rgba(99, 102, 241, 0.3)",
@@ -171,13 +170,14 @@ const OptionCard = styled(Box)(({ selected }) => ({
 }));
 
 // Text styling for each option
-const OptionLabel = styled(Typography)(({ selected }) => ({
-  color: selected ? "#ffffff" : "#cbd5e1",
+const OptionLabel = styled(Typography)(({ selected, themeColors }) => ({
+  color: selected ? themeColors.textPrimary : themeColors.textSecondary,
   fontSize: "18px",
   fontWeight: selected ? "700" : "500",
   display: "flex",
   alignItems: "center",
   gap: "16px",
+  transition: "color 0.3s ease",
 }));
 
 // Submit Vote Button
@@ -196,8 +196,8 @@ const VoteButton = styled(Button)({
     transform: "scale(1.05)",
   },
   "&:disabled": {
-    background: "rgba(255, 255, 255, 0.05)",
-    color: "#64748b",
+    background: "rgba(99, 102, 241, 0.3)",
+    color: "rgba(255, 255, 255, 0.5)",
     boxShadow: "none",
   },
 });
@@ -217,16 +217,17 @@ const StyledCircularProgress = styled(CircularProgress)({
 });
 
 // Error display box
-const ErrorContainer = styled(Box)({
+const ErrorContainer = styled(Box)(({ themeColors }) => ({
   textAlign: "center",
   padding: "80px 40px",
-  background: "rgba(255, 255, 255, 0.03)",
+  background: themeColors.bgCard,
   borderRadius: "24px",
   backdropFilter: "blur(20px)",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
+  border: `1px solid ${themeColors.borderPrimary}`,
   maxWidth: "600px",
   margin: "0 auto",
-});
+  transition: "all 0.3s ease",
+}));
 
 // Status label above question
 const StatusChip = styled(Chip)({
@@ -244,6 +245,7 @@ const StatusChip = styled(Chip)({
 function PollDetail() {
   const { id } = useParams(); // Get poll ID from URL
   const navigate = useNavigate();
+  const { colors: themeColors } = useTheme(); // Get theme colors
 
   const [poll, setPoll] = useState(null); // Poll data
   const [selected, setSelected] = useState(""); // Selected option
@@ -283,12 +285,19 @@ function PollDetail() {
   // Show loader while fetching data
   if (loading) {
     return (
-      <StyledBox>
-        <GridPattern />
+      <StyledBox themeColors={themeColors}>
+        <GridPattern themeColors={themeColors} />
         <Container maxWidth="md">
           <LoadingContainer>
             <StyledCircularProgress size={60} thickness={4} />
-            <Typography variant="h6" color="#94a3b8" fontWeight="600">
+            <Typography
+              variant="h6"
+              sx={{
+                color: themeColors.textSecondary,
+                transition: "color 0.3s ease",
+              }}
+              fontWeight="600"
+            >
               Loading poll...
             </Typography>
           </LoadingContainer>
@@ -300,20 +309,39 @@ function PollDetail() {
   // Show error if poll not found
   if (!poll) {
     return (
-      <StyledBox>
-        <GridPattern />
-        <BackButton onClick={() => navigate("/")} size="large">
+      <StyledBox themeColors={themeColors}>
+        <GridPattern themeColors={themeColors} />
+        <BackButton
+          onClick={() => navigate("/")}
+          size="large"
+          themeColors={themeColors}
+        >
           <ArrowBackIcon />
         </BackButton>
         <Container maxWidth="md">
-          <ErrorContainer>
+          <ErrorContainer themeColors={themeColors}>
             <Box fontSize="80px" mb={3}>
               ❌
             </Box>
-            <Typography variant="h4" fontWeight="800" color="#f1f5f9" mb={2}>
+            <Typography
+              variant="h4"
+              fontWeight="800"
+              sx={{
+                color: themeColors.textPrimary,
+                transition: "color 0.3s ease",
+              }}
+              mb={2}
+            >
               Poll Not Found
             </Typography>
-            <Typography variant="body1" color="#94a3b8" mb={4}>
+            <Typography
+              variant="body1"
+              sx={{
+                color: themeColors.textSecondary,
+                transition: "color 0.3s ease",
+              }}
+              mb={4}
+            >
               The poll you're looking for doesn't exist or has been removed.
             </Typography>
             <Button
@@ -337,11 +365,15 @@ function PollDetail() {
 
   // ---------- MAIN UI ----------
   return (
-    <StyledBox>
-      <GridPattern />
+    <StyledBox themeColors={themeColors}>
+      <GridPattern themeColors={themeColors} />
 
       {/* Back Button */}
-      <BackButton onClick={() => navigate("/")} size="large">
+      <BackButton
+        onClick={() => navigate("/")}
+        size="large"
+        themeColors={themeColors}
+      >
         <ArrowBackIcon />
       </BackButton>
 
@@ -350,15 +382,17 @@ function PollDetail() {
           <HeaderContainer>
             <IconContainer>🗳️</IconContainer>
             <StatusChip icon={<HowToVoteIcon />} label="Cast Your Vote" />
-            <Title variant="h2">{poll.question}</Title>
-            <Subtitle>
+            <Title variant="h2" themeColors={themeColors}>
+              {poll.question}
+            </Title>
+            <Subtitle themeColors={themeColors}>
               Select one option below and click vote to submit your choice
             </Subtitle>
           </HeaderContainer>
         </Fade>
 
         <Fade in timeout={1000}>
-          <StyledCard>
+          <StyledCard themeColors={themeColors}>
             <CardContent sx={{ p: 4 }}>
               {/* Radio buttons for each option */}
               <RadioGroup
@@ -370,6 +404,7 @@ function PollDetail() {
                     <OptionCard
                       selected={selected === option.id.toString()}
                       onClick={() => setSelected(option.id.toString())}
+                      themeColors={themeColors}
                     >
                       <FormControlLabel
                         value={option.id}
@@ -377,7 +412,10 @@ function PollDetail() {
                           <Radio
                             icon={
                               <RadioButtonUncheckedIcon
-                                sx={{ color: "#64748b", fontSize: 28 }}
+                                sx={{
+                                  color: themeColors.textTertiary,
+                                  fontSize: 28,
+                                }}
                               />
                             }
                             checkedIcon={
@@ -391,6 +429,7 @@ function PollDetail() {
                         label={
                           <OptionLabel
                             selected={selected === option.id.toString()}
+                            themeColors={themeColors}
                           >
                             {option.text}
                             {/* Green tick when selected */}
@@ -433,7 +472,10 @@ function PollDetail() {
 
                 <Typography
                   variant="caption"
-                  color="#64748b"
+                  sx={{
+                    color: themeColors.textTertiary,
+                    transition: "color 0.3s ease",
+                  }}
                   textAlign="center"
                 >
                   💡 Your vote is anonymous and cannot be changed after

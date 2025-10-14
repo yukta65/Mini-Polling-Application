@@ -5,16 +5,22 @@ import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import PollIcon from "@mui/icons-material/Poll";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import { useTheme } from "../theme/context";
 
 // The main container with gradient background and animated circles
-const StyledBox = styled(Box)({
+const StyledBox = styled(Box)(({ themeColors, isDark }) => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   minHeight: "100vh",
-  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  background: isDark
+    ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+    : "linear-gradient(135deg, #a78bfa 0%, #ec4899 100%)",
   position: "relative",
   overflow: "hidden",
+  transition: "background 0.3s ease",
   "&::before": {
     content: '""',
     position: "absolute",
@@ -41,7 +47,7 @@ const StyledBox = styled(Box)({
     "0%, 100%": { transform: "scale(1)", opacity: 0.8 },
     "50%": { transform: "scale(1.1)", opacity: 0.5 },
   },
-});
+}));
 
 // Floating animated icons on the background
 const FloatingIcon = styled(Box)({
@@ -60,43 +66,48 @@ const FloatingIcon = styled(Box)({
 });
 
 // The main login card with blur glass style
-const StyledPaper = styled(Paper)({
+const StyledPaper = styled(Paper)(({ themeColors, isDark }) => ({
   padding: "45px",
   width: "420px",
   borderRadius: "24px",
-  background: "rgba(255, 255, 255, 0.95)",
+  background: isDark
+    ? "rgba(255, 255, 255, 0.95)"
+    : "rgba(255, 255, 255, 0.98)",
   backdropFilter: "blur(20px)",
   boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
   position: "relative",
   zIndex: 1,
-  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+  transition: "all 0.3s ease",
   "&:hover": {
     transform: "translateY(-8px)",
     boxShadow: "0 16px 48px 0 rgba(31, 38, 135, 0.45)",
   },
-});
+}));
 
 // Top icon container with animation
-const IconContainer = styled(Box)({
+const IconContainer = styled(Box)(({ isDark }) => ({
   display: "flex",
   justifyContent: "center",
   marginBottom: "20px",
   "& .vote-icon": {
     fontSize: "64px",
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    background: isDark
+      ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+      : "linear-gradient(135deg, #a78bfa 0%, #ec4899 100%)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
     animation: "bounce 2s ease-in-out infinite",
+    transition: "background 0.3s ease",
   },
   "@keyframes bounce": {
     "0%, 100%": { transform: "translateY(0px)" },
     "50%": { transform: "translateY(-10px)" },
   },
-});
+}));
 
 // Styled input fields with focus and hover animations
-const StyledTextField = styled(TextField)({
+const StyledTextField = styled(TextField)(({ isDark }) => ({
   "& .MuiOutlinedInput-root": {
     borderRadius: "14px",
     transition: "all 0.3s ease",
@@ -104,53 +115,64 @@ const StyledTextField = styled(TextField)({
     "&:hover": {
       background: "rgba(255, 255, 255, 1)",
       "& .MuiOutlinedInput-notchedOutline": {
-        borderColor: "#667eea",
+        borderColor: isDark ? "#667eea" : "#a78bfa",
         borderWidth: "2px",
       },
     },
     "&.Mui-focused": {
       background: "rgba(255, 255, 255, 1)",
       "& .MuiOutlinedInput-notchedOutline": {
-        borderColor: "#667eea",
+        borderColor: isDark ? "#667eea" : "#a78bfa",
         borderWidth: "2px",
       },
     },
   },
   "& .MuiInputLabel-root.Mui-focused": {
-    color: "#667eea",
+    color: isDark ? "#667eea" : "#a78bfa",
     fontWeight: "600",
   },
-});
+}));
 
 // Styled button for login with gradient and hover animation
-const StyledButton = styled(Button)({
+const StyledButton = styled(Button)(({ isDark }) => ({
   borderRadius: "14px",
   padding: "14px",
   fontSize: "17px",
   fontWeight: "700",
   textTransform: "none",
   marginTop: "8px",
-  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  background: isDark
+    ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+    : "linear-gradient(135deg, #a78bfa 0%, #ec4899 100%)",
   transition: "all 0.3s ease",
-  boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
+  boxShadow: isDark
+    ? "0 4px 15px rgba(102, 126, 234, 0.3)"
+    : "0 4px 15px rgba(167, 139, 250, 0.3)",
   "&:hover": {
-    background: "linear-gradient(135deg, #764ba2 0%, #667eea 100%)",
+    background: isDark
+      ? "linear-gradient(135deg, #764ba2 0%, #667eea 100%)"
+      : "linear-gradient(135deg, #ec4899 0%, #a78bfa 100%)",
     transform: "scale(1.03)",
-    boxShadow: "0 8px 25px rgba(102, 126, 234, 0.5)",
+    boxShadow: isDark
+      ? "0 8px 25px rgba(102, 126, 234, 0.5)"
+      : "0 8px 25px rgba(167, 139, 250, 0.5)",
   },
-});
+}));
 
 // Title text style for the page
-const Title = styled(Typography)({
+const Title = styled(Typography)(({ isDark }) => ({
   fontWeight: "800",
   fontSize: "32px",
-  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  background: isDark
+    ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+    : "linear-gradient(135deg, #a78bfa 0%, #ec4899 100%)",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
   backgroundClip: "text",
   marginBottom: "8px",
   letterSpacing: "-0.5px",
-});
+  transition: "background 0.3s ease",
+}));
 
 // Subtitle under title
 const Subtitle = styled(Typography)({
@@ -179,12 +201,33 @@ const Divider = styled(Box)({
   },
 });
 
+// Theme toggle button
+const ThemeToggleButton = styled(Button)(({ isDark }) => ({
+  position: "absolute",
+  top: "20px",
+  right: "20px",
+  minWidth: "50px",
+  width: "50px",
+  height: "50px",
+  borderRadius: "12px",
+  background: "rgba(255, 255, 255, 0.2)",
+  backdropFilter: "blur(10px)",
+  border: "1px solid rgba(255, 255, 255, 0.3)",
+  color: "#ffffff",
+  transition: "all 0.3s ease",
+  "&:hover": {
+    background: "rgba(255, 255, 255, 0.3)",
+    transform: "rotate(180deg) scale(1.1)",
+  },
+}));
+
 // Login component main function
 function Login({ setToken, setRole }) {
   // State variables for input fields
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { colors: themeColors, isDark, toggleTheme } = useTheme();
 
   // Function to handle user login
   const handleLogin = async (e) => {
@@ -203,7 +246,16 @@ function Login({ setToken, setRole }) {
 
   // Main return layout of login page
   return (
-    <StyledBox>
+    <StyledBox themeColors={themeColors} isDark={isDark}>
+      {/* Theme toggle button */}
+      <ThemeToggleButton onClick={toggleTheme} isDark={isDark}>
+        {isDark ? (
+          <Brightness7Icon sx={{ fontSize: 28 }} />
+        ) : (
+          <Brightness4Icon sx={{ fontSize: 28 }} />
+        )}
+      </ThemeToggleButton>
+
       {/* Background floating icons */}
       <FloatingIcon className="icon-1">
         <HowToVoteIcon fontSize="inherit" />
@@ -216,12 +268,12 @@ function Login({ setToken, setRole }) {
       </FloatingIcon>
 
       {/* Login card container */}
-      <StyledPaper elevation={0}>
-        <IconContainer>
+      <StyledPaper elevation={0} themeColors={themeColors} isDark={isDark}>
+        <IconContainer isDark={isDark}>
           <HowToVoteIcon className="vote-icon" />
         </IconContainer>
 
-        <Title variant="h4" align="center">
+        <Title variant="h4" align="center" isDark={isDark}>
           Welcome Back
         </Title>
         <Subtitle align="center">Login to create and vote on polls</Subtitle>
@@ -235,6 +287,7 @@ function Login({ setToken, setRole }) {
             fullWidth
             margin="normal"
             required
+            isDark={isDark}
           />
           <StyledTextField
             label="Password"
@@ -244,8 +297,14 @@ function Login({ setToken, setRole }) {
             fullWidth
             margin="normal"
             required
+            isDark={isDark}
           />
-          <StyledButton type="submit" variant="contained" fullWidth>
+          <StyledButton
+            type="submit"
+            variant="contained"
+            fullWidth
+            isDark={isDark}
+          >
             Login to Vote
           </StyledButton>
         </form>
@@ -261,13 +320,13 @@ function Login({ setToken, setRole }) {
           variant="body2"
           sx={{
             "& span": {
-              color: "#667eea",
+              color: isDark ? "#667eea" : "#a78bfa",
               cursor: "pointer",
               fontWeight: "700",
               fontSize: "15px",
               transition: "all 0.2s ease",
               "&:hover": {
-                color: "#764ba2",
+                color: isDark ? "#764ba2" : "#ec4899",
                 textDecoration: "underline",
               },
             },
