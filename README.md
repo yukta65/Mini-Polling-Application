@@ -63,7 +63,7 @@ Before you begin, ensure you have the following installed:
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone <your-repository-url>
+git clone {https://github.com/yukta65/Mini-Polling-Application}
 cd polling-app
 ```
 
@@ -92,7 +92,7 @@ EXIT;
 
 ```bash
 cd polling-backend
-# or stay in root if backend is in root
+
 ```
 
 #### Install dependencies:
@@ -106,7 +106,7 @@ npm install
 ```env
 # Database Configuration
 DB_NAME=polling_app
-DB_USER=root
+DB_USER=Use_id
 DB_PASS=your_mysql_password
 DB_HOST=localhost
 DB_DIALECT=mysql
@@ -269,25 +269,6 @@ polling-app/
     ├── .env
     └── package.json
 ```
-
-## 🔌 API Endpoints
-
-### Authentication Routes (`/api/auth`)
-
-| Method | Endpoint    | Description       | Auth Required |
-| ------ | ----------- | ----------------- | ------------- |
-| POST   | `/register` | Register new user | ❌            |
-| POST   | `/login`    | Login user        | ❌            |
-
-### Poll Routes (`/api/polls`)
-
-| Method | Endpoint       | Description      | Auth Required | Role  |
-| ------ | -------------- | ---------------- | ------------- | ----- |
-| GET    | `/`            | Get all polls    | ❌            | -     |
-| GET    | `/:id`         | Get single poll  | ❌            | -     |
-| POST   | `/`            | Create new poll  | ✅            | Admin |
-| POST   | `/:id/vote`    | Vote on poll     | ✅            | Any   |
-| GET    | `/:id/results` | Get poll results | ❌            | -     |
 
 ## 🧪 Testing the Application
 
@@ -492,16 +473,10 @@ Contributions are welcome! Please follow these steps:
 4. Push to branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📝 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
 ## 👨‍💻 Author
 
-**Your Name**
-
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
+- GitHub: [@yukta65](https://github.com/yukta65)
+- Email: yuktamahedu652004@gmail.com
 
 ## 🙏 Acknowledgments
 
@@ -512,10 +487,10 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 📞 Support
 
-For support, email your.email@example.com or open an issue in the repository.
+For support, email yuktamahedu652004@gmail.com or open an issue in the repository.
 
 ---
 
-Made with ❤️ and ☕ by [Your Name]
+Made with ❤️ and ☕ by Yukta
 
 **Happy Polling! 🗳️✨**
