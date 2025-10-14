@@ -40,4 +40,4 @@ router.post("/:id/vote", auth(), pollController.vote);
 // GET /api/polls/:id/results - Get poll results with vote counts (Public)
 // No authentication required - anyone can view results
 // Returns: Poll with options and their vote counts/percentages
-rout;
+module.exports = router;

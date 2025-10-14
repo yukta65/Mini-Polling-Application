@@ -3,7 +3,7 @@ import { IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
-import { useTheme } from "./ThemeContext";
+import { useTheme } from "../theme/context";
 
 const StyledToggleButton = styled(IconButton)(({ theme: muiTheme }) => ({
   background: "rgba(99, 102, 241, 0.1)",

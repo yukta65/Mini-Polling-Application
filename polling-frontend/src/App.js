@@ -45,15 +45,17 @@ import ThemeToggle from "./theme/toggle";
 // ------------------------- Styled Components -----------------------------
 
 // Glassmorphism navigation bar with scroll-based styling and theme support
-const GlassAppBar = styled(AppBar)(({ scrolled, themecolors }) => ({
-  // Background changes opacity and darkness based on scroll position and theme
-  background: scrolled ? themecolors.navbarScrolled : themecolors.navbar,
+const GlassAppBar = styled(AppBar)(({ scrolled, themecolors, isDark }) => ({
+  // Background uses theme colors - matches body background
+  background: isDark
+    ? "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)"
+    : "linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(248,250,252,0.8) 100%)",
   backdropFilter: "blur(20px)", // Glassmorphism blur effect
   borderBottom: `1px solid ${themecolors.borderPrimary}`, // Theme-aware border
   // Box shadow intensifies when scrolled
   boxShadow: scrolled
-    ? "0 4px 30px rgba(99,102,241,0.25)"
-    : "0 2px 20px rgba(0,0,0,0.3)",
+    ? `0 4px 30px ${isDark ? "rgba(0,0,0,0.4)" : "rgba(99,102,241,0.2)"}`
+    : `0 2px 20px ${isDark ? "rgba(0,0,0,0.2)" : "rgba(99,102,241,0.1)"}`,
   transition: "all 0.3s ease", // Smooth transition between states
 }));
 
@@ -118,7 +120,9 @@ const NavButton = styled(Button)(({ active, themecolors }) => ({
   },
   // Hover effect: background color and lift up
   "&:hover": {
-    background: "rgba(99, 102, 241, 0.15)",
+    background: themecolors.isDark
+      ? "rgba(99, 102, 241, 0.15)"
+      : "rgba(99, 102, 241, 0.1)",
     color: themecolors.textPrimary,
     transform: "translateY(-2px)",
   },
@@ -152,11 +156,13 @@ const RoleChip = styled(Chip)({
 const StyledMenu = styled(Menu)(({ themecolors }) => ({
   // Menu paper (background container) styling
   "& .MuiPaper-root": {
-    background: themecolors.menuBg, // Theme-aware background
+    background: themecolors.bgCard, // Theme-aware background
     backdropFilter: "blur(20px)", // Glassmorphism blur
     border: `1px solid ${themecolors.borderPrimary}`,
     borderRadius: "16px",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+    boxShadow: themecolors.isDark
+      ? "0 8px 32px rgba(0,0,0,0.5)"
+      : "0 8px 32px rgba(99,102,241,0.2)",
   },
   // Individual menu item styling
   "& .MuiMenuItem-root": {
@@ -191,7 +197,7 @@ function ScrollHandler({ children }) {
 function Navigation({ role, handleLogout }) {
   const location = useLocation(); // Get current route location
   const [anchorEl, setAnchorEl] = useState(null); // State for dropdown menu anchor
-  const { colors: themeColors } = useTheme(); // Get theme colors
+  const { colors: themeColors, isDark } = useTheme(); // Get theme colors and isDark flag
 
   // Open user dropdown menu
   const handleMenuOpen = (e) => setAnchorEl(e.currentTarget);
@@ -202,7 +208,12 @@ function Navigation({ role, handleLogout }) {
 
   return (
     <ScrollHandler>
-      <GlassAppBar position="fixed" elevation={0} themecolors={themeColors}>
+      <GlassAppBar
+        position="fixed"
+        elevation={0}
+        themecolors={themeColors}
+        isDark={isDark}
+      >
         <Container maxWidth="xl">
           <Toolbar sx={{ padding: "8px 0", minHeight: "64px" }}>
             {/* Logo - links to home page */}

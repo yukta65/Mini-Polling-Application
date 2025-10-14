@@ -229,7 +229,7 @@ const ButtonContainer = styled(Box)({
 });
 
 // Styled buttons for voting and viewing results with distinct styles
-const StyledButton = styled(Button)({
+const StyledButton = styled(Button)(({ isDark }) => ({
   borderRadius: "14px",
   padding: "12px 24px",
   fontSize: "15px",
@@ -250,17 +250,23 @@ const StyledButton = styled(Button)({
   },
   // Secondary "Results" button style with outline
   "&.result-button": {
-    background: "rgba(255, 255, 255, 0.05)",
-    color: "#cbd5e1",
-    border: "2px solid rgba(255, 255, 255, 0.2)",
+    background: isDark
+      ? "rgba(255, 255, 255, 0.05)"
+      : "rgba(99, 102, 241, 0.1)",
+    color: isDark ? "#cbd5e1" : "#4f46e5",
+    border: isDark
+      ? "2px solid rgba(255, 255, 255, 0.2)"
+      : "2px solid rgba(99, 102, 241, 0.3)",
     "&:hover": {
-      background: "rgba(255, 255, 255, 0.1)",
+      background: isDark
+        ? "rgba(99, 102, 241, 0.2)"
+        : "rgba(99, 102, 241, 0.2)",
       transform: "scale(1.05)",
-      borderColor: "rgba(168, 85, 247, 0.5)",
-      color: "#ffffff",
+      borderColor: "rgba(99, 102, 241, 0.6)",
+      color: isDark ? "#ffffff" : "#1e1b4b",
     },
   },
-});
+}));
 
 // Empty state container when no polls are available
 const EmptyState = styled(Box)(({ themeColors }) => ({
@@ -507,6 +513,7 @@ function PollList() {
                           className="vote-button"
                           variant="contained"
                           startIcon={<HowToVoteIcon />}
+                          isDark={isDark}
                         >
                           Vote Now
                         </StyledButton>
@@ -517,6 +524,7 @@ function PollList() {
                           className="result-button"
                           variant="outlined"
                           startIcon={<BarChartIcon />}
+                          isDark={isDark}
                         >
                           Results
                         </StyledButton>

@@ -33,8 +33,8 @@ import PeopleIcon from "@mui/icons-material/People";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import { useTheme } from "./ThemeContext";
-import ThemeToggle from "./ThemeToggle";
+import { useTheme } from "../theme/context";
+import ThemeToggle from "../theme/toggle";
 
 // Register Chart.js components
 ChartJS.register(
