@@ -1,6 +1,7 @@
+// Import necessary React hooks and dependencies
 import React, { useEffect, useState } from "react";
-import api from "../api";
-import { Link } from "react-router-dom";
+import api from "../api"; // API service for making HTTP requests
+import { Link } from "react-router-dom"; // React Router for navigation
 import {
   Box,
   Card,
@@ -14,8 +15,8 @@ import {
   IconButton,
   Fade,
   Skeleton,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
+} from "@mui/material"; // Material-UI components
+import { styled } from "@mui/material/styles"; // MUI styled components
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import PeopleIcon from "@mui/icons-material/People";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -23,12 +24,14 @@ import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import RefreshIcon from "@mui/icons-material/Refresh";
 
+// Main container for the page with gradient background and animated circles
 const StyledBox = styled(Box)({
   minHeight: "100vh",
   background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)",
   position: "relative",
   overflow: "hidden",
   padding: "60px 0",
+  // Animated circle in top-right corner using pseudo-element
   "&::before": {
     content: '""',
     position: "absolute",
@@ -41,6 +44,7 @@ const StyledBox = styled(Box)({
     right: "-200px",
     animation: "drift 20s ease-in-out infinite",
   },
+  // Animated circle in bottom-left corner using pseudo-element
   "&::after": {
     content: '""',
     position: "absolute",
@@ -53,6 +57,7 @@ const StyledBox = styled(Box)({
     left: "-150px",
     animation: "drift 15s ease-in-out infinite reverse",
   },
+  // Keyframe animation for drifting circles effect
   "@keyframes drift": {
     "0%, 100%": {
       transform: "translate(0, 0) scale(1)",
@@ -63,33 +68,39 @@ const StyledBox = styled(Box)({
   },
 });
 
+// Subtle grid pattern overlay for background
 const GridPattern = styled(Box)({
   position: "absolute",
   inset: 0,
+  // Creates intersecting horizontal and vertical lines
   backgroundImage: `linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
                     linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px)`,
   backgroundSize: "50px 50px",
-  zIndex: 0,
+  zIndex: 0, // Behind other content
 });
 
+// Header container for title and subtitle
 const HeaderContainer = styled(Box)({
   textAlign: "center",
   marginBottom: "60px",
   position: "relative",
-  zIndex: 1,
+  zIndex: 1, // Above background elements
 });
 
+// Title text with gradient effect
 const Title = styled(Typography)({
   fontWeight: "800",
   fontSize: "56px",
+  // Gradient text effect using background-clip technique
   background: "linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
   backgroundClip: "text",
   marginBottom: "16px",
-  letterSpacing: "-2px",
+  letterSpacing: "-2px", // Tighter letter spacing for modern look
 });
 
+// Subtitle text below the title
 const Subtitle = styled(Typography)({
   color: "#94a3b8",
   fontSize: "20px",
@@ -99,6 +110,7 @@ const Subtitle = styled(Typography)({
   lineHeight: "1.6",
 });
 
+// Container for stats cards (currently commented out in JSX)
 const StatsBar = styled(Box)({
   display: "flex",
   justifyContent: "center",
@@ -109,9 +121,10 @@ const StatsBar = styled(Box)({
   zIndex: 1,
 });
 
+// Individual stat card style with glassmorphism effect
 const StatCard = styled(Box)({
-  background: "rgba(255, 255, 255, 0.05)",
-  backdropFilter: "blur(20px)",
+  background: "rgba(255, 255, 255, 0.05)", // Semi-transparent white
+  backdropFilter: "blur(20px)", // Glassmorphism blur effect
   border: "1px solid rgba(255, 255, 255, 0.1)",
   borderRadius: "16px",
   padding: "20px 32px",
@@ -119,6 +132,7 @@ const StatCard = styled(Box)({
   alignItems: "center",
   gap: "16px",
   transition: "all 0.3s ease",
+  // Hover effect to lift card and increase contrast
   "&:hover": {
     background: "rgba(255, 255, 255, 0.08)",
     transform: "translateY(-4px)",
@@ -126,24 +140,27 @@ const StatCard = styled(Box)({
   },
 });
 
+// Icon inside stat card with gradient background
 const StatIcon = styled(Avatar)({
   background: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
   width: "48px",
   height: "48px",
 });
 
+// Card style for each poll with glassmorphism and hover effects
 const StyledCard = styled(Card)({
   borderRadius: "24px",
   background: "rgba(255, 255, 255, 0.03)",
   backdropFilter: "blur(20px)",
   border: "1px solid rgba(255, 255, 255, 0.1)",
   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
-  transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+  transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)", // Smooth easing
   height: "100%",
   display: "flex",
   flexDirection: "column",
   position: "relative",
   overflow: "hidden",
+  // Top gradient bar appears on hover
   "&::before": {
     content: '""',
     position: "absolute",
@@ -152,36 +169,40 @@ const StyledCard = styled(Card)({
     right: 0,
     height: "4px",
     background: "linear-gradient(90deg, #6366f1 0%, #a855f7 100%)",
-    opacity: 0,
+    opacity: 0, // Hidden by default
     transition: "opacity 0.3s ease",
   },
+  // Hover effect: lift card, enhance glow, show top bar
   "&:hover": {
     transform: "translateY(-12px)",
     boxShadow: "0 20px 60px rgba(99, 102, 241, 0.4)",
     background: "rgba(255, 255, 255, 0.06)",
     borderColor: "rgba(99, 102, 241, 0.3)",
     "&::before": {
-      opacity: 1,
+      opacity: 1, // Show gradient bar on hover
     },
   },
 });
 
+// Poll question text inside the card
 const PollQuestion = styled(Typography)({
   fontWeight: "700",
   fontSize: "22px",
   color: "#f1f5f9",
   marginBottom: "16px",
   lineHeight: "1.4",
-  minHeight: "60px",
+  minHeight: "60px", // Consistent height across cards
 });
 
+// Meta info container (tags, status)
 const PollMeta = styled(Box)({
   display: "flex",
   gap: "12px",
   marginBottom: "20px",
-  flexWrap: "wrap",
+  flexWrap: "wrap", // Wrap tags on smaller screens
 });
 
+// Individual meta tag style with custom colors
 const MetaChip = styled(Chip)({
   background: "rgba(99, 102, 241, 0.15)",
   color: "#a5b4fc",
@@ -195,30 +216,34 @@ const MetaChip = styled(Chip)({
   },
 });
 
+// Container for action buttons (Vote / Results)
 const ButtonContainer = styled(Box)({
   display: "flex",
   gap: "12px",
-  marginTop: "auto",
+  marginTop: "auto", // Push buttons to bottom of card
 });
 
+// Styled buttons for voting and viewing results with distinct styles
 const StyledButton = styled(Button)({
   borderRadius: "14px",
   padding: "12px 24px",
   fontSize: "15px",
   fontWeight: "700",
-  textTransform: "none",
-  flex: 1,
+  textTransform: "none", // Disable uppercase transformation
+  flex: 1, // Equal width buttons
   transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+  // Primary "Vote" button style with gradient
   "&.vote-button": {
     background: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
     color: "#ffffff",
     boxShadow: "0 4px 20px rgba(99, 102, 241, 0.4)",
     "&:hover": {
       background: "linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)",
-      transform: "scale(1.05)",
+      transform: "scale(1.05)", // Slight grow on hover
       boxShadow: "0 8px 30px rgba(99, 102, 241, 0.6)",
     },
   },
+  // Secondary "Results" button style with outline
   "&.result-button": {
     background: "rgba(255, 255, 255, 0.05)",
     color: "#cbd5e1",
@@ -232,6 +257,7 @@ const StyledButton = styled(Button)({
   },
 });
 
+// Empty state container when no polls are available
 const EmptyState = styled(Box)({
   textAlign: "center",
   padding: "80px 40px",
@@ -246,10 +272,12 @@ const EmptyState = styled(Box)({
   zIndex: 1,
 });
 
+// Animated icon inside empty state with floating animation
 const EmptyIcon = styled(Box)({
   fontSize: "120px",
   marginBottom: "24px",
   animation: "float 3s ease-in-out infinite",
+  // Keyframe for floating up and down
   "@keyframes float": {
     "0%, 100%": {
       transform: "translateY(0px)",
@@ -260,6 +288,7 @@ const EmptyIcon = styled(Box)({
   },
 });
 
+// Refresh button at the top right to reload polls
 const RefreshButton = styled(IconButton)({
   position: "absolute",
   top: "80px",
@@ -270,42 +299,51 @@ const RefreshButton = styled(IconButton)({
   color: "#cbd5e1",
   zIndex: 2,
   transition: "all 0.3s ease",
+  // Rotate icon on hover
   "&:hover": {
     background: "rgba(99, 102, 241, 0.2)",
-    transform: "rotate(180deg)",
+    transform: "rotate(180deg)", // 180 degree rotation
     color: "#a5b4fc",
   },
 });
 
+// Main component function
 function PollList() {
-  const [polls, setPolls] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // State variables
+  const [polls, setPolls] = useState([]); // Array of poll objects
+  const [loading, setLoading] = useState(true); // Loading state for API call
 
+  // Function to fetch polls from API
   const fetchPolls = () => {
-    setLoading(true);
+    setLoading(true); // Show loading state
     api.get("/polls").then((res) => {
-      setPolls(res.data);
-      setLoading(false);
+      setPolls(res.data); // Update polls state with API response
+      setLoading(false); // Hide loading state
     });
   };
 
+  // Fetch polls on component mount
   useEffect(() => {
     fetchPolls();
-  }, []);
+  }, []); // Empty dependency array = run once on mount
 
-  const totalPolls = polls.length;
-  const totalVotes = polls.reduce((sum, poll) => sum + (poll.votes || 0), 0);
-  const activeUsers = Math.floor(totalVotes * 0.7);
+  // Derived stats (currently used only in commented-out stats bar)
+  const totalPolls = polls.length; // Total number of polls
+  const totalVotes = polls.reduce((sum, poll) => sum + (poll.votes || 0), 0); // Sum all votes
+  const activeUsers = Math.floor(totalVotes * 0.7); // Estimate active users (70% of votes)
 
   return (
     <StyledBox>
+      {/* Background grid pattern overlay */}
       <GridPattern />
 
+      {/* Refresh button in top-right corner */}
       <RefreshButton onClick={fetchPolls} size="large">
         <RefreshIcon />
       </RefreshButton>
 
       <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
+        {/* Page header with fade-in animation */}
         <Fade in timeout={800}>
           <HeaderContainer>
             <Title variant="h1">Democracy in Action</Title>
@@ -316,53 +354,9 @@ function PollList() {
           </HeaderContainer>
         </Fade>
 
-        {/* <Fade in timeout={1000}>
-          <StatsBar>
-            <StatCard>
-              <StatIcon>
-                <TrendingUpIcon />
-              </StatIcon>
-              <Box>
-                <Typography variant="h4" fontWeight="800" color="#ffffff">
-                  {totalPolls}
-                </Typography>
-                <Typography variant="body2" color="#94a3b8">
-                  Active Polls
-                </Typography>
-              </Box>
-            </StatCard>
-
-            <StatCard>
-              <StatIcon>
-                <HowToVoteIcon />
-              </StatIcon>
-              <Box>
-                <Typography variant="h4" fontWeight="800" color="#ffffff">
-                  {totalVotes}
-                </Typography>
-                <Typography variant="body2" color="#94a3b8">
-                  Total Votes
-                </Typography>
-              </Box>
-            </StatCard> */}
-
-        {/* <StatCard> */}
-        {/* <StatIcon>
-            <PeopleIcon />
-          </StatIcon>
-          <Box>
-            <Typography variant="h4" fontWeight="800" color="#ffffff">
-              {activeUsers}
-            </Typography>
-            <Typography variant="body2" color="#94a3b8">
-              Active Users
-            </Typography>
-          </Box>
-        </StatCard> */}
-        {/* </StatsBar>
-        </Fade> */}
-
+        {/* Conditional rendering based on loading state */}
         {loading ? (
+          // Loading skeleton - shows while data is being fetched
           <Grid container spacing={3}>
             {[1, 2, 3].map((item) => (
               <Grid item xs={12} sm={6} md={4} key={item}>
@@ -373,6 +367,7 @@ function PollList() {
                   }}
                 >
                   <CardContent sx={{ p: 3 }}>
+                    {/* Skeleton placeholders for poll content */}
                     <Skeleton
                       variant="text"
                       width="80%"
@@ -416,6 +411,7 @@ function PollList() {
             ))}
           </Grid>
         ) : polls.length === 0 ? (
+          // Empty state when no polls are available
           <Fade in timeout={600}>
             <EmptyState>
               <EmptyIcon>🗳️</EmptyIcon>
@@ -443,9 +439,12 @@ function PollList() {
             </EmptyState>
           </Fade>
         ) : (
+          // Display polls in a responsive grid
           <Grid container spacing={3}>
             {polls.map((poll, index) => (
+              // Each poll card in a grid item (responsive: 12 cols mobile, 6 tablet, 4 desktop)
               <Grid item xs={12} sm={6} md={4} key={poll.id}>
+                {/* Staggered fade-in animation (each card delays slightly) */}
                 <Fade in timeout={600 + index * 100}>
                   <StyledCard>
                     <CardContent
@@ -456,14 +455,11 @@ function PollList() {
                         height: "100%",
                       }}
                     >
+                      {/* Poll question text */}
                       <PollQuestion variant="h6">{poll.question}</PollQuestion>
 
+                      {/* Poll metadata (status, tags) */}
                       <PollMeta>
-                        {/* <MetaChip
-                          icon={<HowToVoteIcon />}
-                          label={`${poll.votes || 0} votes`}
-                          size="small"
-                        /> */}
                         <MetaChip
                           icon={<AccessTimeIcon />}
                           label="Active"
@@ -471,7 +467,9 @@ function PollList() {
                         />
                       </PollMeta>
 
+                      {/* Action buttons for voting and viewing results */}
                       <ButtonContainer>
+                        {/* Vote button - navigates to poll detail page */}
                         <StyledButton
                           component={Link}
                           to={`/polls/${poll.id}`}
@@ -481,6 +479,7 @@ function PollList() {
                         >
                           Vote Now
                         </StyledButton>
+                        {/* Results button - navigates to results page */}
                         <StyledButton
                           component={Link}
                           to={`/polls/${poll.id}/results`}

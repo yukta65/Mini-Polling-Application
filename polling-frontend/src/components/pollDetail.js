@@ -1,5 +1,8 @@
+// PollDetail.jsx
+// This component displays details of a specific poll and allows the user to vote on one option.
+
 import React, { useEffect, useState } from "react";
-import api from "../api";
+import api from "../api"; // Custom API instance for backend communication
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Button,
@@ -23,12 +26,16 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 
+// ---------- STYLED COMPONENTS ----------
+
+// Main background container with animated gradients
 const StyledBox = styled(Box)({
   minHeight: "100vh",
   background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)",
   position: "relative",
   overflow: "hidden",
   padding: "60px 0",
+
   "&::before": {
     content: '""',
     position: "absolute",
@@ -53,16 +60,15 @@ const StyledBox = styled(Box)({
     left: "-150px",
     animation: "drift 15s ease-in-out infinite reverse",
   },
+
+  // Floating gradient animation
   "@keyframes drift": {
-    "0%, 100%": {
-      transform: "translate(0, 0) scale(1)",
-    },
-    "50%": {
-      transform: "translate(50px, 30px) scale(1.1)",
-    },
+    "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+    "50%": { transform: "translate(50px, 30px) scale(1.1)" },
   },
 });
 
+// Subtle background grid overlay
 const GridPattern = styled(Box)({
   position: "absolute",
   inset: 0,
@@ -72,6 +78,7 @@ const GridPattern = styled(Box)({
   zIndex: 0,
 });
 
+// Back button in the top-left corner
 const BackButton = styled(IconButton)({
   position: "absolute",
   top: "80px",
@@ -89,6 +96,7 @@ const BackButton = styled(IconButton)({
   },
 });
 
+// Poll title and description header
 const HeaderContainer = styled(Box)({
   textAlign: "center",
   marginBottom: "40px",
@@ -96,6 +104,7 @@ const HeaderContainer = styled(Box)({
   zIndex: 1,
 });
 
+// Animated vote icon
 const IconContainer = styled(Box)({
   display: "flex",
   justifyContent: "center",
@@ -103,12 +112,8 @@ const IconContainer = styled(Box)({
   fontSize: "72px",
   animation: "bounce 2s ease-in-out infinite",
   "@keyframes bounce": {
-    "0%, 100%": {
-      transform: "translateY(0px)",
-    },
-    "50%": {
-      transform: "translateY(-15px)",
-    },
+    "0%, 100%": { transform: "translateY(0px)" },
+    "50%": { transform: "translateY(-15px)" },
   },
 });
 
@@ -128,6 +133,7 @@ const Subtitle = styled(Typography)({
   fontWeight: "400",
 });
 
+// Card for poll content
 const StyledCard = styled(Card)({
   borderRadius: "24px",
   background: "rgba(255, 255, 255, 0.03)",
@@ -139,6 +145,7 @@ const StyledCard = styled(Card)({
   overflow: "visible",
 });
 
+// Each option box (highlighted when selected)
 const OptionCard = styled(Box)(({ selected }) => ({
   background: selected
     ? "linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.15) 100%)"
@@ -161,21 +168,9 @@ const OptionCard = styled(Box)(({ selected }) => ({
       : "rgba(99, 102, 241, 0.3)",
     transform: "translateX(8px)",
   },
-  "&::before": {
-    content: '""',
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: "100%",
-    background: selected
-      ? "linear-gradient(90deg, rgba(99, 102, 241, 0.3) 0%, transparent 100%)"
-      : "transparent",
-    borderRadius: "14px",
-    opacity: 0.5,
-  },
 }));
 
+// Text styling for each option
 const OptionLabel = styled(Typography)(({ selected }) => ({
   color: selected ? "#ffffff" : "#cbd5e1",
   fontSize: "18px",
@@ -183,10 +178,9 @@ const OptionLabel = styled(Typography)(({ selected }) => ({
   display: "flex",
   alignItems: "center",
   gap: "16px",
-  position: "relative",
-  zIndex: 1,
 }));
 
+// Submit Vote Button
 const VoteButton = styled(Button)({
   borderRadius: "14px",
   padding: "16px 48px",
@@ -200,7 +194,6 @@ const VoteButton = styled(Button)({
   "&:hover": {
     background: "linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)",
     transform: "scale(1.05)",
-    boxShadow: "0 12px 40px rgba(99, 102, 241, 0.6)",
   },
   "&:disabled": {
     background: "rgba(255, 255, 255, 0.05)",
@@ -209,6 +202,7 @@ const VoteButton = styled(Button)({
   },
 });
 
+// Loader container
 const LoadingContainer = styled(Box)({
   display: "flex",
   flexDirection: "column",
@@ -220,11 +214,9 @@ const LoadingContainer = styled(Box)({
 
 const StyledCircularProgress = styled(CircularProgress)({
   color: "#a5b4fc",
-  "& .MuiCircularProgress-circle": {
-    strokeLinecap: "round",
-  },
 });
 
+// Error display box
 const ErrorContainer = styled(Box)({
   textAlign: "center",
   padding: "80px 40px",
@@ -232,11 +224,11 @@ const ErrorContainer = styled(Box)({
   borderRadius: "24px",
   backdropFilter: "blur(20px)",
   border: "1px solid rgba(255, 255, 255, 0.1)",
-  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
   maxWidth: "600px",
   margin: "0 auto",
 });
 
+// Status label above question
 const StatusChip = styled(Chip)({
   background: "rgba(99, 102, 241, 0.15)",
   color: "#a5b4fc",
@@ -247,14 +239,18 @@ const StatusChip = styled(Chip)({
   marginBottom: "24px",
 });
 
-function PollDetail() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [poll, setPoll] = useState(null);
-  const [selected, setSelected] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [voting, setVoting] = useState(false);
+// ---------- MAIN COMPONENT ----------
 
+function PollDetail() {
+  const { id } = useParams(); // Get poll ID from URL
+  const navigate = useNavigate();
+
+  const [poll, setPoll] = useState(null); // Poll data
+  const [selected, setSelected] = useState(""); // Selected option
+  const [loading, setLoading] = useState(true); // Loading state
+  const [voting, setVoting] = useState(false); // Submitting state
+
+  // Fetch poll details when component mounts
   useEffect(() => {
     api
       .get(`/polls/${id}`)
@@ -267,6 +263,7 @@ function PollDetail() {
       });
   }, [id]);
 
+  // Handle user vote submission
   const handleVote = () => {
     setVoting(true);
     api
@@ -281,6 +278,9 @@ function PollDetail() {
       });
   };
 
+  // ---------- CONDITIONAL RENDERING ----------
+
+  // Show loader while fetching data
   if (loading) {
     return (
       <StyledBox>
@@ -297,6 +297,7 @@ function PollDetail() {
     );
   }
 
+  // Show error if poll not found
   if (!poll) {
     return (
       <StyledBox>
@@ -334,10 +335,12 @@ function PollDetail() {
     );
   }
 
+  // ---------- MAIN UI ----------
   return (
     <StyledBox>
       <GridPattern />
 
+      {/* Back Button */}
       <BackButton onClick={() => navigate("/")} size="large">
         <ArrowBackIcon />
       </BackButton>
@@ -345,11 +348,7 @@ function PollDetail() {
       <Container maxWidth="md" sx={{ position: "relative", zIndex: 1 }}>
         <Fade in timeout={800}>
           <HeaderContainer>
-            <IconContainer>
-              <span role="img" aria-label="vote">
-                🗳️
-              </span>
-            </IconContainer>
+            <IconContainer>🗳️</IconContainer>
             <StatusChip icon={<HowToVoteIcon />} label="Cast Your Vote" />
             <Title variant="h2">{poll.question}</Title>
             <Subtitle>
@@ -361,6 +360,7 @@ function PollDetail() {
         <Fade in timeout={1000}>
           <StyledCard>
             <CardContent sx={{ p: 4 }}>
+              {/* Radio buttons for each option */}
               <RadioGroup
                 value={selected}
                 onChange={(e) => setSelected(e.target.value)}
@@ -382,10 +382,7 @@ function PollDetail() {
                             }
                             checkedIcon={
                               <RadioButtonCheckedIcon
-                                sx={{
-                                  color: "#a5b4fc",
-                                  fontSize: 28,
-                                }}
+                                sx={{ color: "#a5b4fc", fontSize: 28 }}
                               />
                             }
                             sx={{ mr: 1 }}
@@ -396,6 +393,7 @@ function PollDetail() {
                             selected={selected === option.id.toString()}
                           >
                             {option.text}
+                            {/* Green tick when selected */}
                             {selected === option.id.toString() && (
                               <CheckCircleIcon
                                 sx={{
@@ -407,19 +405,14 @@ function PollDetail() {
                             )}
                           </OptionLabel>
                         }
-                        sx={{
-                          width: "100%",
-                          margin: 0,
-                          "& .MuiFormControlLabel-label": {
-                            width: "100%",
-                          },
-                        }}
+                        sx={{ width: "100%", margin: 0 }}
                       />
                     </OptionCard>
                   </Fade>
                 ))}
               </RadioGroup>
 
+              {/* Submit button */}
               <Box
                 mt={4}
                 display="flex"

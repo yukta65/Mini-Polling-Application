@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
+// Styled container for the full page with background gradient and animated circles
 const StyledBox = styled(Box)({
   display: "flex",
   justifyContent: "center",
@@ -54,6 +55,7 @@ const StyledBox = styled(Box)({
   },
 });
 
+// Floating icons for decorative effect
 const FloatingIcon = styled(Box)({
   position: "absolute",
   color: "rgba(255, 255, 255, 0.15)",
@@ -88,6 +90,7 @@ const FloatingIcon = styled(Box)({
   },
 });
 
+// Paper container for the form with shadow and hover effects
 const StyledPaper = styled(Paper)({
   padding: "45px",
   width: "420px",
@@ -104,6 +107,7 @@ const StyledPaper = styled(Paper)({
   },
 });
 
+// Icon at top of form with bounce animation
 const IconContainer = styled(Box)({
   display: "flex",
   justifyContent: "center",
@@ -121,6 +125,7 @@ const IconContainer = styled(Box)({
   },
 });
 
+// Styled TextField with focus and hover effects
 const StyledTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
     borderRadius: "14px",
@@ -147,6 +152,7 @@ const StyledTextField = styled(TextField)({
   },
 });
 
+// Styled select dropdown for role selection
 const StyledSelect = styled(Select)({
   borderRadius: "14px",
   transition: "all 0.3s ease",
@@ -167,6 +173,7 @@ const StyledSelect = styled(Select)({
   },
 });
 
+// Styled submit button with gradient and hover effect
 const StyledButton = styled(Button)({
   borderRadius: "14px",
   padding: "14px",
@@ -184,6 +191,7 @@ const StyledButton = styled(Button)({
   },
 });
 
+// Title text with gradient effect
 const Title = styled(Typography)({
   fontWeight: "800",
   fontSize: "32px",
@@ -195,6 +203,7 @@ const Title = styled(Typography)({
   letterSpacing: "-0.5px",
 });
 
+// Subtitle text below the title
 const Subtitle = styled(Typography)({
   color: "#64748b",
   fontSize: "15px",
@@ -202,6 +211,7 @@ const Subtitle = styled(Typography)({
   fontWeight: "500",
 });
 
+// Divider for separating form and login option
 const Divider = styled(Box)({
   display: "flex",
   alignItems: "center",
@@ -221,36 +231,43 @@ const Divider = styled(Box)({
 });
 
 function Register() {
+  // State variables for form inputs
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("user");
-  const navigate = useNavigate();
+  const [role, setRole] = useState("user"); // default role
+  const navigate = useNavigate(); // navigation for redirect after registration
 
+  // Function to handle form submission
   const handleRegister = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // prevent default form submission
     try {
+      // POST request to register user
       await api.post("/auth/register", { username, password, role });
       alert("Registered! Now login.");
-      navigate("/login");
+      navigate("/login"); // redirect to login page
     } catch (err) {
-      alert("Registration failed");
+      alert("Registration failed"); // show error if registration fails
     }
   };
 
   return (
     <StyledBox>
+      {/* Decorative floating icons */}
       <FloatingIcon className="icon-1">📊</FloatingIcon>
       <FloatingIcon className="icon-2">✅</FloatingIcon>
       <FloatingIcon className="icon-3">📋</FloatingIcon>
 
+      {/* Main registration form container */}
       <StyledPaper elevation={0}>
         <IconContainer>📊</IconContainer>
 
+        {/* Title and subtitle */}
         <Title variant="h4" align="center">
           Join the Community
         </Title>
         <Subtitle align="center">Create polls and share your opinions</Subtitle>
 
+        {/* Registration form */}
         <form onSubmit={handleRegister}>
           <StyledTextField
             label="Username"
@@ -283,10 +300,12 @@ function Register() {
           </StyledButton>
         </form>
 
+        {/* Divider */}
         <Divider>
           <span>OR</span>
         </Divider>
 
+        {/* Login redirect option */}
         <Typography
           align="center"
           variant="body2"
