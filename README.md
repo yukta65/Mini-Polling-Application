@@ -5,472 +5,582 @@ A modern, full-stack polling application with real-time updates, user authentica
 ![VoteHub](https://img.shields.io/badge/VoteHub-Polling%20App-6366f1?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)
 
+## 📋 Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Database Schema](#database-schema)
+- [Prerequisites](#prerequisites)
+- [Installation & Setup](#installation--setup)
+- [Environment Variables](#environment-variables)
+- [Running the Application](#running-the-application)
+- [API Endpoints](#api-endpoints)
+- [Design Decisions](#design-decisions)
+- [Using the Application](#using-the-application)
+- [Troubleshooting](#troubleshooting)
+- [Security](#security)
+- [Contributing](#contributing)
+
 ## ✨ Features
 
-### 🎯 Core Functionality
+### Core Functionality
 
-- **Real-time Poll Updates** - Live vote counts using Socket.io
-- **User Authentication** - Secure JWT-based login/registration
-- **Role-Based Access** - Admin and User roles with different permissions
-- **Beautiful UI** - Modern glassmorphism design with smooth animations
-- **Responsive Design** - Works perfectly on desktop, tablet, and mobile
-- **Vote Tracking** - Prevents duplicate voting using IP/User tracking
+- Real-time poll updates using Socket.io
+- Secure JWT-based user authentication
+- Role-based access control (Admin & User roles)
+- Modern glassmorphism design with smooth animations
+- Fully responsive layout (desktop, tablet, mobile)
+- Vote tracking to prevent duplicate voting
+- Real-time vote count updates across all connected clients
 
-### 👤 User Features
+### User Features
 
 - View all active polls
 - Vote on polls (authenticated users only)
-- View real-time results with charts and progress bars
-- See winner highlighting and vote percentages
+- View real-time results with animated charts and progress bars
+- See winner highlighting with vote percentages
+- Light/Dark theme toggle
 
-### 👨‍💼 Admin Features
+### Admin Features
 
 - Create new polls with multiple options
 - All user features included
+- View aggregate poll statistics
 
 ## 🛠️ Tech Stack
 
 ### Frontend
 
-- **React** 18.x - UI library
-- **React Router** - Client-side routing
-- **Material-UI (MUI)** - Component library
-- **Chart.js** - Data visualization
-- **Axios** - HTTP client
-- **Socket.io Client** - Real-time updates
+- **React** 18.x - UI library with hooks
+- **React Router** v6 - Client-side routing
+- **Material-UI (MUI)** v5 - Component library with theme support
+- **Chart.js & react-chartjs-2** - Data visualization
+- **Axios** - HTTP client with interceptors
+- **Socket.io Client** v4 - Real-time WebSocket communication
+- **Styled Components** - CSS-in-JS styling with MUI
 
 ### Backend
 
-- **Node.js** - Runtime environment
-- **Express.js** - Web framework
-- **Sequelize** - ORM for database
-- **MySQL** - Relational database
-- **Socket.io** - WebSocket server
-- **JWT** - Authentication tokens
-- **bcryptjs** - Password hashing
+- **Node.js** v14+ - JavaScript runtime
+- **Express.js** v4 - Web framework with middleware
+- **Sequelize** v6 - ORM for database operations
+- **MySQL** v5.7+ - Relational database
+- **Socket.io** v4 - Real-time bidirectional communication
+- **JWT** - Stateless authentication tokens
+- **bcryptjs** - Password hashing and verification
+- **CORS** - Cross-origin resource sharing
+- **dotenv** - Environment variable management
+
+## 💾 Database Schema
+
+### Users Table
+
+```sql
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role ENUM('admin', 'user') DEFAULT 'user',
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Polls Table
+
+```sql
+CREATE TABLE polls (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  question VARCHAR(500) NOT NULL,
+  createdBy INT NOT NULL,
+  status ENUM('active', 'closed') DEFAULT 'active',
+  totalVotes INT DEFAULT 0,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (createdBy) REFERENCES users(id)
+);
+```
+
+### Options Table
+
+```sql
+CREATE TABLE options (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  pollId INT NOT NULL,
+  optionText VARCHAR(500) NOT NULL,
+  voteCount INT DEFAULT 0,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (pollId) REFERENCES polls(id) ON DELETE CASCADE
+);
+```
+
+### Votes Table
+
+```sql
+CREATE TABLE votes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  pollId INT NOT NULL,
+  optionId INT NOT NULL,
+  userId INT NOT NULL,
+  ipAddress VARCHAR(45),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_user_poll (userId, pollId),
+  FOREIGN KEY (pollId) REFERENCES polls(id) ON DELETE CASCADE,
+  FOREIGN KEY (optionId) REFERENCES options(id) ON DELETE CASCADE,
+  FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
+```
+
+### Relationships
+
+```
+Users (1) ──→ (Many) Polls
+Users (1) ──→ (Many) Votes
+Polls (1) ──→ (Many) Options
+Polls (1) ──→ (Many) Votes
+Options (1) ──→ (Many) Votes
+```
 
 ## 📋 Prerequisites
 
-Before you begin, ensure you have the following installed:
-
-- **Node.js** (v14 or higher) - [Download](https://nodejs.org/)
-- **MySQL** (v5.7 or higher) - [Download](https://dev.mysql.com/downloads/)
+- **Node.js** v14 or higher - [Download](https://nodejs.org/)
+- **MySQL** v5.7 or higher - [Download](https://dev.mysql.com/downloads/)
 - **npm** or **yarn** - Comes with Node.js
 - **Git** (optional) - [Download](https://git-scm.com/)
 
 ## 🚀 Installation & Setup
 
-### 1️⃣ Clone the Repository
+### 1. Clone the Repository
 
 ```bash
-git clone {https://github.com/yukta65/Mini-Polling-Application}
-cd polling-app
+git clone https://github.com/yukta65/Mini-Polling-Application.git
+cd Mini-Polling-Application
 ```
 
-### 2️⃣ Database Setup
+### 2. Database Setup
 
-#### Create MySQL Database
-
-Open MySQL command line or MySQL Workbench and run:
-
-```sql
-CREATE DATABASE polling_app;
-```
-
-Or use command line:
+Open MySQL and create the database:
 
 ```bash
 mysql -u root -p
-# Enter password when prompted
+```
+
+```sql
 CREATE DATABASE polling_app;
 EXIT;
 ```
 
-### 3️⃣ Backend Setup
-
-#### Navigate to backend directory (if separate) or stay in root:
+### 3. Backend Setup
 
 ```bash
 cd polling-backend
-
-```
-
-#### Install dependencies:
-
-```bash
 npm install
 ```
 
-#### Create `.env` file in backend root:
+Create `.env` file in `polling-backend/`:
 
 ```env
 # Database Configuration
 DB_NAME=polling_app
-DB_USER=Use_id
+DB_USER=User_id
 DB_PASS=your_mysql_password
 DB_HOST=localhost
+DB_PORT=3306
 DB_DIALECT=mysql
 
-# JWT Secret (use a strong random string)
-JWT_SECRET=your_super_secret_jwt_key_here_make_it_long_and_random
+# JWT Configuration
+JWT_SECRET=your_super_secret_jwt_key_here_make_it_long_and_random_at_least_32_characters
 
-# Server Port
+# Server Configuration
 PORT=5000
+NODE_ENV=development
+
+# Socket.io Configuration
+SOCKET_PORT=5000
 ```
 
-**Important:** Replace `your_mysql_password` with your actual MySQL password and generate a strong JWT secret.
-
-#### Generate a strong JWT secret (optional):
+Generate a strong JWT secret:
 
 ```bash
-node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-### 4️⃣ Frontend Setup
-
-#### Navigate to frontend directory:
+### 4. Frontend Setup
 
 ```bash
-cd polling-frontend
-```
-
-#### Install dependencies:
-
-```bash
+cd ../polling-frontend
 npm install
 ```
 
-#### Create `.env` file in frontend root (if needed):
+Create `.env` file in `polling-frontend/`:
 
 ```env
 REACT_APP_API_URL=http://localhost:5000/api
 REACT_APP_SOCKET_URL=http://localhost:5000
 ```
 
-**Note:** Most configurations are already in the code, but you can customize URLs here if needed.
+## 🌍 Environment Variables Documentation
+
+### Backend (.env)
+
+| Variable     | Required | Description                    | Example                       |
+| ------------ | -------- | ------------------------------ | ----------------------------- |
+| `DB_NAME`    | Yes      | Database name                  | `polling_app`                 |
+| `DB_USER`    | Yes      | MySQL username                 | `username`                    |
+| `DB_PASS`    | Yes      | MySQL password                 | `password`                    |
+| `DB_HOST`    | Yes      | Database host                  | `localhost`                   |
+| `DB_PORT`    | No       | MySQL port                     | `3306`                        |
+| `DB_DIALECT` | Yes      | Database type                  | `mysql`                       |
+| `JWT_SECRET` | Yes      | JWT signing key (min 32 chars) | `your_random_secret_key`      |
+| `PORT`       | No       | Server port                    | `5000`                        |
+| `NODE_ENV`   | No       | Environment mode               | `development` or `production` |
+
+### Frontend (.env)
+
+| Variable               | Required | Description          | Example                     |
+| ---------------------- | -------- | -------------------- | --------------------------- |
+| `REACT_APP_API_URL`    | Yes      | Backend API base URL | `http://localhost:5000/api` |
+| `REACT_APP_SOCKET_URL` | Yes      | Socket.io server URL | `http://localhost:5000`     |
 
 ## ▶️ Running the Application
 
-### Option 1: Run Both Servers Separately (Recommended for Development)
-
-#### Terminal 1 - Start Backend Server:
+### Terminal 1 - Backend Server
 
 ```bash
 cd polling-backend
 npm start
-# or
-npm run dev  # if using nodemon
 ```
 
-You should see:
+Or with auto-reload using nodemon:
+
+```bash
+npm install -g nodemon
+npm run dev
+```
+
+Expected output:
 
 ```
 Server running on port 5000
+Database connected successfully
 ```
 
-#### Terminal 2 - Start Frontend Server:
+### Terminal 2 - Frontend Server
 
 ```bash
 cd polling-frontend
 npm start
 ```
 
-The React app will open automatically at `http://localhost:3000`
+The React app opens automatically at `http://localhost:3000`
 
-### Option 2: Run with Nodemon (Auto-restart on changes)
+## 📡 API Endpoints
 
-#### Backend with auto-reload:
+### Authentication Endpoints
 
-```bash
-cd polling-backend
-npm install -g nodemon  # Install globally if not installed
-nodemon server.js
+#### Register User
+
 ```
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "username": "john_doe",
+  "password": "secure_password",
+  "role": "user"
+}
+
+Response: { token, user: { id, username, role } }
+```
+
+#### Login User
+
+```
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "username": "john_doe",
+  "password": "secure_password"
+}
+
+Response: { token, user: { id, username, role } }
+```
+
+### Poll Endpoints
+
+#### Get All Polls
+
+```
+GET /api/polls
+Authorization: Bearer <token>
+
+Response: [{ id, question, status, totalVotes, createdAt, options: [...] }, ...]
+```
+
+#### Get Single Poll
+
+```
+GET /api/polls/:id
+Authorization: Bearer <token>
+
+Response: { id, question, options: [...], createdBy, status }
+```
+
+#### Create Poll (Admin Only)
+
+```
+POST /api/polls
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "question": "What's your favorite programming language?",
+  "options": ["JavaScript", "Python", "Java", "Go"]
+}
+
+Response: { id, question, options: [...], status: 'active' }
+```
+
+#### Vote on Poll
+
+```
+POST /api/polls/:pollId/vote
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "optionId": 1
+}
+
+Response: { success: true, poll: {...} }
+```
+
+#### Get Poll Results
+
+```
+GET /api/polls/:id/results
+Authorization: Bearer <token>
+
+Response: {
+  question,
+  totalVotes,
+  options: [
+    { id, optionText, voteCount, percentage },
+    ...
+  ]
+}
+```
+
+## 🎯 Design Decisions
+
+### Architecture
+
+**MVC Pattern** - Separation of concerns with Models, Controllers, and Routes for maintainability and scalability.
+
+**JWT Authentication** - Stateless authentication allows horizontal scaling without session management overhead.
+
+**Socket.io for Real-time Updates** - Provides instant poll updates across all connected clients without polling overhead.
+
+### Frontend
+
+**Theme Context API** - Centralized theme management for light/dark mode switching without prop drilling.
+
+**Styled Components** - Dynamic styling based on theme with better performance than inline styles.
+
+**React Router v6** - Modern routing with nested routes and automatic redirection for unauthenticated users.
+
+### Backend
+
+**Sequelize ORM** - Type-safe database queries with model validation and automatic migrations.
+
+**Middleware Stack** - CORS, JSON parsing, and authentication middleware for security and flexibility.
+
+**Vote Unique Constraint** - Database-level enforcement prevents duplicate votes more reliably than application logic.
+
+### Database
+
+**Soft Deletes Not Used** - Hard deletes keep data lean; audit logs could be added if needed.
+
+**Vote Tracking** - Stores userId and ipAddress for comprehensive duplicate detection.
+
+**Cascade Delete** - Deleting a poll automatically removes associated options and votes.
 
 ## 🎮 Using the Application
 
 ### First Time Setup
 
-1. **Open Browser** - Navigate to `http://localhost:3000`
-
-2. **Register an Admin User**
-
-   - Click "Register now!" or go to `/register`
-   - Enter username and password
-   - Select "Admin" role
-   - Click "Create Account"
-
-3. **Login**
-   - Enter your credentials
-   - Click "Login to Vote"
-   - You'll be redirected to the polls page
+1. Open browser to `http://localhost:3000`
+2. Click "Register now!" to create an account
+3. Choose "Admin" role for full access or "User" for voting only
+4. Click "Create Account"
+5. Login with your credentials
 
 ### Creating a Poll (Admin Only)
 
-1. Click "Create Poll" in the navigation (only visible to admins)
-2. Enter your poll question
+1. Click "Create Poll" in navbar
+2. Enter poll question
 3. Add at least 2 options (click "Add Another Option" for more)
 4. Click "Create Poll"
-5. Your poll will appear on the main page
+5. Poll appears on main page in real-time
 
-### Voting on a Poll (All Users)
+### Voting
 
-1. From the polls list, click "Vote Now" on any poll
+1. Click "Vote Now" on a poll
 2. Select your preferred option
 3. Click "Submit Vote"
-4. View results automatically or click "Results" button
+4. View results automatically
 
-### Viewing Results
+### Real-time Updates
 
-1. Click "Results" button on any poll card
-2. See live vote counts, percentages, and charts
-3. Winner is highlighted with a trophy icon
-4. Results update in real-time as others vote
-
-## 📁 Project Structure
-
-```
-polling-app/
-├── polling-backend/           # Backend server
-│   ├── config/
-│   │   └── db.js             # Database configuration
-│   ├── controllers/
-│   │   ├── authController.js # Authentication logic
-│   │   └── pollController.js # Poll logic
-│   ├── middleware/
-│   │   └── auth.js           # JWT authentication middleware
-│   ├── models/
-│   │   ├── index.js          # Model associations
-│   │   ├── user.js           # User model
-│   │   ├── poll.js           # Poll model
-│   │   ├── option.js         # Option model
-│   │   └── vote.js           # Vote model
-│   ├── routes/
-│   │   ├── authRoutes.js     # Auth endpoints
-│   │   └── pollRoutes.js     # Poll endpoints
-│   ├── .env                  # Environment variables
-│   ├── app.js                # Express app setup
-│   ├── server.js             # Server entry point
-│   └── package.json
-│
-└── polling-frontend/          # React frontend
-    ├── public/
-    ├── src/
-    │   ├── components/
-    │   │   ├── login.js      # Login page
-    │   │   ├── register.js   # Registration page
-    │   │   ├── pollList.js   # Polls listing
-    │   │   ├── pollDetail.js # Vote page
-    │   │   ├── results.js    # Results page
-    │   │   └── createPoll.js # Create poll (admin)
-    │   ├── api.js            # Axios configuration
-    │   ├── App.js            # Main app component
-    │   └── index.js          # React entry point
-    ├── .env
-    └── package.json
-```
-
-## 🧪 Testing the Application
-
-### Test User Accounts
-
-Create these test accounts for different scenarios:
-
-```
-Admin Account:
-Username: admin
-Password: admin123
-Role: Admin
-
-User Account:
-Username: user
-Password: user123
-Role: User
-```
-
-### Test Scenarios
-
-1. **Admin Flow**
-
-   - Login as admin
-   - Create a new poll
-   - Vote on the poll
-   - View results
-
-2. **User Flow**
-
-   - Login as user
-   - Try to access create poll (should redirect)
-   - Vote on existing polls
-   - View results
-
-3. **Real-time Updates**
-   - Open two browser windows
-   - Vote in one window
-   - Watch results update in the other window instantly
+- Vote in one browser window
+- Watch results update in another window instantly
+- Open DevTools Network tab to see Socket.io packets
 
 ## 🐛 Troubleshooting
 
-### Backend Won't Start
+### Backend Issues
 
-**Error:** `Access denied for user 'root'@'localhost'`
+**"Access denied for user 'root'@'localhost'"**
 
-- **Solution:** Check MySQL password in `.env` file
+- Check MySQL password in `.env` matches your MySQL installation
 
-**Error:** `Port 5000 already in use`
+**"Port 5000 already in use"**
 
-- **Solution:** Change PORT in `.env` or kill the process:
+```bash
+# Windows
+netstat -ano | findstr :5000
+taskkill /PID <PID> /F
 
-  ```bash
-  # Windows
-  netstat -ano | findstr :5000
-  taskkill /PID <PID> /F
+# Mac/Linux
+lsof -i :5000
+kill -9 <PID>
+```
 
-  # Mac/Linux
-  lsof -i :5000
-  kill -9 <PID>
-  ```
+**"Unknown database 'polling_app'"**
 
-**Error:** `Unknown database 'polling_app'`
+```sql
+CREATE DATABASE polling_app;
+```
 
-- **Solution:** Create database in MySQL:
-  ```sql
-  CREATE DATABASE polling_app;
-  ```
+**"Cannot GET /api/polls"**
 
-### Frontend Won't Start
+- Verify backend is running on port 5000
+- Check that routes are properly imported in `server.js`
 
-**Error:** `Cannot connect to backend`
+### Frontend Issues
 
-- **Solution:** Ensure backend is running on port 5000
-- Check if `http://localhost:5000/api` is accessible
+**"Cannot connect to backend"**
 
-**Error:** `Module not found`
+- Ensure backend runs on `http://localhost:5000`
+- Check REACT_APP_API_URL in `.env`
+- Check browser DevTools Network tab for failed requests
 
-- **Solution:** Delete `node_modules` and reinstall:
-  ```bash
-  rm -rf node_modules package-lock.json
-  npm install
-  ```
+**"Module not found"**
 
-### Socket.io Not Working
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
 
-**Issue:** Results don't update in real-time
+**"Socket.io not connecting"**
 
-- **Solution:** Check backend console for "A user connected" message
-- Verify CORS settings in `server.js`
-- Check browser console for Socket.io errors
+- Verify backend is running
+- Check REACT_APP_SOCKET_URL in `.env`
+- Look for Socket.io connection error in browser console
+- Ensure CORS is enabled in backend `server.js`
 
-### Database Issues
+## 🔒 Security
 
-**Error:** Table doesn't exist
+### Current Implementation
 
-- **Solution:** Restart backend server (Sequelize will auto-create tables)
-- Or manually sync:
-  ```javascript
-  sequelize.sync({ force: true }); // Warning: Drops all tables!
-  ```
+- Passwords hashed with bcryptjs (10 salt rounds)
+- JWT tokens with secure secrets (minimum 32 characters)
+- CORS restricted to localhost in development
+- SQL injection prevention via Sequelize ORM
+- Duplicate vote prevention with unique constraints
 
-## 🔒 Security Notes
+### Production Checklist
 
-### Production Deployment Checklist
+- Change JWT_SECRET to a strong random string
+- Set NODE_ENV=production
+- Enable HTTPS
+- Restrict CORS to specific frontend domain
+- Use secure cookies (httpOnly, sameSite, secure flags)
+- Implement rate limiting
+- Add input validation and sanitization
+- Use database connection pooling
+- Enable HTTPS for Socket.io
+- Set up logging and monitoring
+- Use environment-specific `.env` files
+- Add request body size limits
+- Enable helmet.js for security headers
 
-- [ ] Change JWT_SECRET to a strong random string
-- [ ] Use environment-specific `.env` files
-- [ ] Enable HTTPS
-- [ ] Restrict CORS to specific origins
-- [ ] Use secure cookies for tokens
-- [ ] Add rate limiting
-- [ ] Implement input validation
-- [ ] Use prepared statements (already done with Sequelize)
-- [ ] Add logging and monitoring
-- [ ] Use database migrations instead of `sync()`
-
-### Environment Variables Security
-
-**Never commit `.env` files to Git!**
+### Never Commit
 
 Add to `.gitignore`:
 
 ```
 .env
 .env.local
-.env.production
+.env.*.local
+node_modules/
+npm-debug.log
 ```
 
-## 📦 Dependencies
+## 📁 Project Structure
 
-### Backend Dependencies
-
-```json
-{
-  "express": "^4.18.0",
-  "sequelize": "^6.32.0",
-  "mysql2": "^3.5.0",
-  "socket.io": "^4.6.0",
-  "bcryptjs": "^2.4.3",
-  "jsonwebtoken": "^9.0.0",
-  "cors": "^2.8.5",
-  "dotenv": "^16.0.0"
-}
 ```
-
-### Frontend Dependencies
-
-```json
-{
-  "react": "^18.2.0",
-  "react-router-dom": "^6.14.0",
-  "@mui/material": "^5.14.0",
-  "@mui/icons-material": "^5.14.0",
-  "@emotion/react": "^11.11.0",
-  "@emotion/styled": "^11.11.0",
-  "axios": "^1.4.0",
-  "chart.js": "^4.3.0",
-  "react-chartjs-2": "^5.2.0",
-  "socket.io-client": "^4.6.0"
-}
+Mini-Polling-Application/
+├── polling-backend/
+│   ├── config/
+│   │   └── db.js              # Sequelize configuration
+│   ├── controllers/
+│   │   ├── authController.js  # Login/Register logic
+│   │   └── pollController.js  # Poll CRUD operations
+│   ├── middleware/
+│   │   └── auth.js            # JWT verification
+│   ├── models/
+│   │   ├── index.js           # Model associations
+│   │   ├── User.js
+│   │   ├── Poll.js
+│   │   ├── Option.js
+│   │   └── Vote.js
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   └── pollRoutes.js
+│   ├── .env
+│   ├── app.js                 # Express setup
+│   ├── server.js              # Entry point with Socket.io
+│   └── package.json
+│
+└── polling-frontend/
+    ├── src/
+    │   ├── components/
+    │   │   ├── login.js
+    │   │   ├── register.js
+    │   │   ├── pollList.js
+    │   │   ├── pollDetail.js
+    │   │   ├── results.js
+    │   │   └── createPoll.js
+    │   ├── theme/
+    │   │   ├── context.js      # Theme provider
+    │   │   └── toggle.js       # Theme switcher
+    │   ├── api.js              # Axios setup
+    │   ├── App.js
+    │   └── index.js
+    ├── .env
+    ├── package.json
+    └── README.md
 ```
-
-## 🚢 Deployment
-
-### Backend Deployment (Heroku Example)
-
-```bash
-# Install Heroku CLI
-heroku login
-heroku create your-polling-backend
-
-# Set environment variables
-heroku config:set DB_NAME=your_db
-heroku config:set DB_USER=your_user
-heroku config:set DB_PASS=your_password
-heroku config:set JWT_SECRET=your_secret
-
-# Deploy
-git push heroku main
-```
-
-### Frontend Deployment (Netlify/Vercel)
-
-1. Build the React app:
-
-   ```bash
-   npm run build
-   ```
-
-2. Deploy the `build` folder to Netlify or Vercel
-
-3. Update API URLs to point to your deployed backend
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please follow these steps:
-
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
+2. Create a feature branch: `git checkout -b feature/YourFeature`
+3. Commit changes: `git commit -m 'Add YourFeature'`
+4. Push branch: `git push origin feature/YourFeature`
 5. Open a Pull Request
 
 ## 👨‍💻 Author
@@ -480,14 +590,15 @@ Contributions are welcome! Please follow these steps:
 
 ## 🙏 Acknowledgments
 
-- Material-UI for the beautiful component library
+- Material-UI for component library
 - Socket.io for real-time functionality
-- Chart.js for data visualization
-- The open-source community
+- Chart.js for visualizations
+- Sequelize for ORM
+- Open-source community
 
 ## 📞 Support
 
-For support, email yuktamahedu652004@gmail.com or open an issue in the repository.
+For support, email yuktamahedu652004@gmail.com or open an issue on GitHub.
 
 ---
 
