@@ -23,22 +23,23 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import { useTheme } from "../theme/context";
 
 // Main container for the page with gradient background and animated circles
-const StyledBox = styled(Box)({
+const StyledBox = styled(Box)(({ themeColors }) => ({
   minHeight: "100vh",
-  background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)",
+  background: themeColors.bgPrimary,
   position: "relative",
   overflow: "hidden",
   padding: "60px 0",
+  transition: "background 0.3s ease",
   // Animated circle in top-right corner using pseudo-element
   "&::before": {
     content: '""',
     position: "absolute",
     width: "800px",
     height: "800px",
-    background:
-      "radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%)",
+    background: themeColors.orbPrimary,
     borderRadius: "50%",
     top: "-300px",
     right: "-200px",
@@ -50,8 +51,7 @@ const StyledBox = styled(Box)({
     position: "absolute",
     width: "600px",
     height: "600px",
-    background:
-      "radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, transparent 70%)",
+    background: themeColors.orbSecondary,
     borderRadius: "50%",
     bottom: "-200px",
     left: "-150px",
@@ -66,18 +66,18 @@ const StyledBox = styled(Box)({
       transform: "translate(50px, 30px) scale(1.1)",
     },
   },
-});
+}));
 
 // Subtle grid pattern overlay for background
-const GridPattern = styled(Box)({
+const GridPattern = styled(Box)(({ themeColors }) => ({
   position: "absolute",
   inset: 0,
   // Creates intersecting horizontal and vertical lines
-  backgroundImage: `linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px)`,
+  backgroundImage: `linear-gradient(${themeColors.gridColor} 1px, transparent 1px),
+                    linear-gradient(90deg, ${themeColors.gridColor} 1px, transparent 1px)`,
   backgroundSize: "50px 50px",
   zIndex: 0, // Behind other content
-});
+}));
 
 // Header container for title and subtitle
 const HeaderContainer = styled(Box)({
@@ -88,27 +88,31 @@ const HeaderContainer = styled(Box)({
 });
 
 // Title text with gradient effect
-const Title = styled(Typography)({
+const Title = styled(Typography)(({ themeColors, isDark }) => ({
   fontWeight: "800",
   fontSize: "56px",
   // Gradient text effect using background-clip technique
-  background: "linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)",
+  background: isDark
+    ? "linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)"
+    : "linear-gradient(135deg, #0f172a 0%, #475569 100%)",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
   backgroundClip: "text",
   marginBottom: "16px",
   letterSpacing: "-2px", // Tighter letter spacing for modern look
-});
+  transition: "background 0.3s ease",
+}));
 
 // Subtitle text below the title
-const Subtitle = styled(Typography)({
-  color: "#94a3b8",
+const Subtitle = styled(Typography)(({ themeColors }) => ({
+  color: themeColors.textSecondary,
   fontSize: "20px",
   fontWeight: "400",
   maxWidth: "600px",
   margin: "0 auto",
   lineHeight: "1.6",
-});
+  transition: "color 0.3s ease",
+}));
 
 // Container for stats cards (currently commented out in JSX)
 const StatsBar = styled(Box)({
@@ -122,10 +126,10 @@ const StatsBar = styled(Box)({
 });
 
 // Individual stat card style with glassmorphism effect
-const StatCard = styled(Box)({
-  background: "rgba(255, 255, 255, 0.05)", // Semi-transparent white
+const StatCard = styled(Box)(({ themeColors }) => ({
+  background: themeColors.bgGlass, // Semi-transparent
   backdropFilter: "blur(20px)", // Glassmorphism blur effect
-  border: "1px solid rgba(255, 255, 255, 0.1)",
+  border: `1px solid ${themeColors.borderPrimary}`,
   borderRadius: "16px",
   padding: "20px 32px",
   display: "flex",
@@ -134,11 +138,11 @@ const StatCard = styled(Box)({
   transition: "all 0.3s ease",
   // Hover effect to lift card and increase contrast
   "&:hover": {
-    background: "rgba(255, 255, 255, 0.08)",
+    background: themeColors.bgGlassHover,
     transform: "translateY(-4px)",
     boxShadow: "0 8px 32px rgba(99, 102, 241, 0.2)",
   },
-});
+}));
 
 // Icon inside stat card with gradient background
 const StatIcon = styled(Avatar)({
@@ -148,11 +152,11 @@ const StatIcon = styled(Avatar)({
 });
 
 // Card style for each poll with glassmorphism and hover effects
-const StyledCard = styled(Card)({
+const StyledCard = styled(Card)(({ themeColors }) => ({
   borderRadius: "24px",
-  background: "rgba(255, 255, 255, 0.03)",
+  background: themeColors.bgCard,
   backdropFilter: "blur(20px)",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
+  border: `1px solid ${themeColors.borderPrimary}`,
   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
   transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)", // Smooth easing
   height: "100%",
@@ -176,23 +180,24 @@ const StyledCard = styled(Card)({
   "&:hover": {
     transform: "translateY(-12px)",
     boxShadow: "0 20px 60px rgba(99, 102, 241, 0.4)",
-    background: "rgba(255, 255, 255, 0.06)",
+    background: themeColors.bgCardHover,
     borderColor: "rgba(99, 102, 241, 0.3)",
     "&::before": {
       opacity: 1, // Show gradient bar on hover
     },
   },
-});
+}));
 
 // Poll question text inside the card
-const PollQuestion = styled(Typography)({
+const PollQuestion = styled(Typography)(({ themeColors }) => ({
   fontWeight: "700",
   fontSize: "22px",
-  color: "#f1f5f9",
+  color: themeColors.textPrimary,
   marginBottom: "16px",
   lineHeight: "1.4",
   minHeight: "60px", // Consistent height across cards
-});
+  transition: "color 0.3s ease",
+}));
 
 // Meta info container (tags, status)
 const PollMeta = styled(Box)({
@@ -258,19 +263,20 @@ const StyledButton = styled(Button)({
 });
 
 // Empty state container when no polls are available
-const EmptyState = styled(Box)({
+const EmptyState = styled(Box)(({ themeColors }) => ({
   textAlign: "center",
   padding: "80px 40px",
-  background: "rgba(255, 255, 255, 0.03)",
+  background: themeColors.bgCard,
   borderRadius: "24px",
   backdropFilter: "blur(20px)",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
+  border: `1px solid ${themeColors.borderPrimary}`,
   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
   maxWidth: "600px",
   margin: "0 auto",
   position: "relative",
   zIndex: 1,
-});
+  transition: "all 0.3s ease",
+}));
 
 // Animated icon inside empty state with floating animation
 const EmptyIcon = styled(Box)({
@@ -289,14 +295,14 @@ const EmptyIcon = styled(Box)({
 });
 
 // Refresh button at the top right to reload polls
-const RefreshButton = styled(IconButton)({
+const RefreshButton = styled(IconButton)(({ themeColors }) => ({
   position: "absolute",
   top: "80px",
   right: "40px",
-  background: "rgba(255, 255, 255, 0.05)",
+  background: themeColors.bgGlass,
   backdropFilter: "blur(20px)",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
-  color: "#cbd5e1",
+  border: `1px solid ${themeColors.borderPrimary}`,
+  color: themeColors.textSecondary,
   zIndex: 2,
   transition: "all 0.3s ease",
   // Rotate icon on hover
@@ -305,13 +311,14 @@ const RefreshButton = styled(IconButton)({
     transform: "rotate(180deg)", // 180 degree rotation
     color: "#a5b4fc",
   },
-});
+}));
 
 // Main component function
 function PollList() {
   // State variables
   const [polls, setPolls] = useState([]); // Array of poll objects
   const [loading, setLoading] = useState(true); // Loading state for API call
+  const { colors: themeColors, isDark } = useTheme(); // Get theme colors
 
   // Function to fetch polls from API
   const fetchPolls = () => {
@@ -333,12 +340,16 @@ function PollList() {
   const activeUsers = Math.floor(totalVotes * 0.7); // Estimate active users (70% of votes)
 
   return (
-    <StyledBox>
+    <StyledBox themeColors={themeColors}>
       {/* Background grid pattern overlay */}
-      <GridPattern />
+      <GridPattern themeColors={themeColors} />
 
       {/* Refresh button in top-right corner */}
-      <RefreshButton onClick={fetchPolls} size="large">
+      <RefreshButton
+        onClick={fetchPolls}
+        size="large"
+        themeColors={themeColors}
+      >
         <RefreshIcon />
       </RefreshButton>
 
@@ -346,8 +357,10 @@ function PollList() {
         {/* Page header with fade-in animation */}
         <Fade in timeout={800}>
           <HeaderContainer>
-            <Title variant="h1">Democracy in Action</Title>
-            <Subtitle variant="h6">
+            <Title variant="h1" themeColors={themeColors} isDark={isDark}>
+              Democracy in Action
+            </Title>
+            <Subtitle variant="h6" themeColors={themeColors}>
               Your opinion matters. Participate in live polls and see real-time
               results from our community.
             </Subtitle>
@@ -363,7 +376,8 @@ function PollList() {
                 <Card
                   sx={{
                     borderRadius: "24px",
-                    background: "rgba(255, 255, 255, 0.03)",
+                    background: themeColors.bgCard,
+                    border: `1px solid ${themeColors.borderPrimary}`,
                   }}
                 >
                   <CardContent sx={{ p: 3 }}>
@@ -372,37 +386,37 @@ function PollList() {
                       variant="text"
                       width="80%"
                       height={40}
-                      sx={{ bgcolor: "rgba(255, 255, 255, 0.1)" }}
+                      sx={{ bgcolor: themeColors.bgGlassHover }}
                     />
                     <Skeleton
                       variant="text"
                       width="60%"
-                      sx={{ bgcolor: "rgba(255, 255, 255, 0.1)", mb: 2 }}
+                      sx={{ bgcolor: themeColors.bgGlassHover, mb: 2 }}
                     />
                     <Box display="flex" gap={1} mb={2}>
                       <Skeleton
                         variant="rounded"
                         width={80}
                         height={28}
-                        sx={{ bgcolor: "rgba(255, 255, 255, 0.1)" }}
+                        sx={{ bgcolor: themeColors.bgGlassHover }}
                       />
                       <Skeleton
                         variant="rounded"
                         width={80}
                         height={28}
-                        sx={{ bgcolor: "rgba(255, 255, 255, 0.1)" }}
+                        sx={{ bgcolor: themeColors.bgGlassHover }}
                       />
                     </Box>
                     <Box display="flex" gap={1}>
                       <Skeleton
                         variant="rounded"
                         height={48}
-                        sx={{ flex: 1, bgcolor: "rgba(255, 255, 255, 0.1)" }}
+                        sx={{ flex: 1, bgcolor: themeColors.bgGlassHover }}
                       />
                       <Skeleton
                         variant="rounded"
                         height={48}
-                        sx={{ flex: 1, bgcolor: "rgba(255, 255, 255, 0.1)" }}
+                        sx={{ flex: 1, bgcolor: themeColors.bgGlassHover }}
                       />
                     </Box>
                   </CardContent>
@@ -413,12 +427,27 @@ function PollList() {
         ) : polls.length === 0 ? (
           // Empty state when no polls are available
           <Fade in timeout={600}>
-            <EmptyState>
+            <EmptyState themeColors={themeColors}>
               <EmptyIcon>🗳️</EmptyIcon>
-              <Typography variant="h4" fontWeight="800" color="#f1f5f9" mb={2}>
+              <Typography
+                variant="h4"
+                fontWeight="800"
+                sx={{
+                  color: themeColors.textPrimary,
+                  transition: "color 0.3s ease",
+                }}
+                mb={2}
+              >
                 No Active Polls
               </Typography>
-              <Typography variant="body1" color="#94a3b8" mb={3}>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: themeColors.textSecondary,
+                  transition: "color 0.3s ease",
+                }}
+                mb={3}
+              >
                 There are no polls available at the moment. New polls will
                 appear here when they are created.
               </Typography>
@@ -446,7 +475,7 @@ function PollList() {
               <Grid item xs={12} sm={6} md={4} key={poll.id}>
                 {/* Staggered fade-in animation (each card delays slightly) */}
                 <Fade in timeout={600 + index * 100}>
-                  <StyledCard>
+                  <StyledCard themeColors={themeColors}>
                     <CardContent
                       sx={{
                         p: 3,
@@ -456,7 +485,9 @@ function PollList() {
                       }}
                     >
                       {/* Poll question text */}
-                      <PollQuestion variant="h6">{poll.question}</PollQuestion>
+                      <PollQuestion variant="h6" themeColors={themeColors}>
+                        {poll.question}
+                      </PollQuestion>
 
                       {/* Poll metadata (status, tags) */}
                       <PollMeta>
