@@ -6,20 +6,16 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { useTheme } from "./ThemeContext";
 
 const StyledToggleButton = styled(IconButton)(({ theme: muiTheme }) => ({
-  position: "fixed",
-  top: "20px",
-  right: "20px",
-  background: "rgba(255, 255, 255, 0.1)",
+  background: "rgba(99, 102, 241, 0.1)",
   backdropFilter: "blur(20px)",
-  border: "1px solid rgba(255, 255, 255, 0.2)",
-  zIndex: 1000,
-  width: "56px",
-  height: "56px",
+  border: "1px solid rgba(99, 102, 241, 0.2)",
+  width: "40px",
+  height: "40px",
   transition: "all 0.3s ease",
   "&:hover": {
-    background: "rgba(99, 102, 241, 0.3)",
+    background: "rgba(99, 102, 241, 0.2)",
     transform: "rotate(180deg) scale(1.1)",
-    boxShadow: "0 8px 32px rgba(99, 102, 241, 0.3)",
+    boxShadow: "0 4px 16px rgba(99, 102, 241, 0.3)",
   },
 }));
 

@@ -38,17 +38,18 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+// Import Theme components
+import { ThemeProvider, useTheme } from "./theme/context";
+import ThemeToggle from "./theme/toggle";
 
 // ------------------------- Styled Components -----------------------------
 
-// Glassmorphism navigation bar with scroll-based styling
-const GlassAppBar = styled(AppBar)(({ scrolled }) => ({
-  // Background changes opacity and darkness based on scroll position
-  background: scrolled
-    ? "linear-gradient(90deg, rgba(15,15,25,0.95) 0%, rgba(25,25,40,0.95) 100%)"
-    : "linear-gradient(90deg, rgba(15,15,25,0.8) 0%, rgba(25,25,40,0.8) 100%)",
+// Glassmorphism navigation bar with scroll-based styling and theme support
+const GlassAppBar = styled(AppBar)(({ scrolled, themecolors }) => ({
+  // Background changes opacity and darkness based on scroll position and theme
+  background: scrolled ? themecolors.navbarScrolled : themecolors.navbar,
   backdropFilter: "blur(20px)", // Glassmorphism blur effect
-  borderBottom: "1px solid rgba(99,102,241,0.2)", // Subtle border
+  borderBottom: `1px solid ${themecolors.borderPrimary}`, // Theme-aware border
   // Box shadow intensifies when scrolled
   boxShadow: scrolled
     ? "0 4px 30px rgba(99,102,241,0.25)"
@@ -81,17 +82,18 @@ const LogoIcon = styled(Box)({
   boxShadow: "0 4px 20px rgba(99, 102, 241, 0.4)", // Glow effect
 });
 
-// Logo text styling
-const LogoText = styled(Typography)({
+// Logo text styling with theme support
+const LogoText = styled(Typography)(({ themecolors }) => ({
   fontWeight: "800",
   fontSize: "20px",
-  color: "#f1f5f9",
+  color: themecolors.textPrimary,
   letterSpacing: "-0.5px", // Tight letter spacing for modern look
-});
+  transition: "color 0.3s ease",
+}));
 
-// Navigation button with active state styling
-const NavButton = styled(Button)(({ active }) => ({
-  color: active ? "#fff" : "#94a3b8", // White when active, gray when inactive
+// Navigation button with active state styling and theme support
+const NavButton = styled(Button)(({ active, themecolors }) => ({
+  color: active ? themecolors.textPrimary : themecolors.textSecondary, // Theme-aware colors
   fontWeight: active ? "700" : "600", // Bolder when active
   fontSize: "15px",
   textTransform: "none", // Disable uppercase transformation
@@ -117,27 +119,10 @@ const NavButton = styled(Button)(({ active }) => ({
   // Hover effect: background color and lift up
   "&:hover": {
     background: "rgba(99, 102, 241, 0.15)",
-    color: "#fff",
+    color: themecolors.textPrimary,
     transform: "translateY(-2px)",
   },
 }));
-
-// "Create Poll" button with gradient and glow (unused in current code but defined)
-const CreateButton = styled(Button)({
-  background: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
-  color: "#fff",
-  fontWeight: "700",
-  textTransform: "none",
-  padding: "10px 24px",
-  borderRadius: "12px",
-  marginLeft: "16px",
-  boxShadow: "0 4px 20px rgba(99, 102, 241, 0.4)",
-  "&:hover": {
-    background: "linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)",
-    transform: "translateY(-2px)",
-    boxShadow: "0 6px 30px rgba(99, 102, 241, 0.6)",
-  },
-});
 
 // User avatar with gradient background and hover scale effect
 const UserAvatar = styled(Avatar)({
@@ -163,27 +148,32 @@ const RoleChip = styled(Chip)({
   marginLeft: "12px",
 });
 
-// Dropdown menu with glassmorphism styling
-const StyledMenu = styled(Menu)({
+// Dropdown menu with glassmorphism styling and theme support
+const StyledMenu = styled(Menu)(({ themecolors }) => ({
   // Menu paper (background container) styling
   "& .MuiPaper-root": {
-    background: "rgba(20, 25, 45, 0.95)", // Dark translucent background
+    background: themecolors.menuBg, // Theme-aware background
     backdropFilter: "blur(20px)", // Glassmorphism blur
-    border: "1px solid rgba(99,102,241,0.2)",
+    border: `1px solid ${themecolors.borderPrimary}`,
     borderRadius: "16px",
     boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
   },
   // Individual menu item styling
   "& .MuiMenuItem-root": {
-    color: "#e2e8f0",
+    color: themecolors.textSecondary,
     padding: "12px 20px",
     fontWeight: "600",
+    transition: "all 0.3s ease",
     "&:hover": {
       background: "rgba(99,102,241,0.15)", // Subtle purple on hover
-      color: "#fff",
+      color: themecolors.textPrimary,
+    },
+    "&.Mui-disabled": {
+      color: themecolors.textTertiary,
+      opacity: 0.7,
     },
   },
-});
+}));
 
 // -------------------------- Navbar Scroll Handler ------------------------
 
@@ -201,6 +191,7 @@ function ScrollHandler({ children }) {
 function Navigation({ role, handleLogout }) {
   const location = useLocation(); // Get current route location
   const [anchorEl, setAnchorEl] = useState(null); // State for dropdown menu anchor
+  const { colors: themeColors } = useTheme(); // Get theme colors
 
   // Open user dropdown menu
   const handleMenuOpen = (e) => setAnchorEl(e.currentTarget);
@@ -211,13 +202,15 @@ function Navigation({ role, handleLogout }) {
 
   return (
     <ScrollHandler>
-      <GlassAppBar position="fixed" elevation={0}>
+      <GlassAppBar position="fixed" elevation={0} themecolors={themeColors}>
         <Container maxWidth="xl">
           <Toolbar sx={{ padding: "8px 0", minHeight: "64px" }}>
             {/* Logo - links to home page */}
             <Logo component={Link} to="/" sx={{ flexShrink: 0 }}>
               <LogoIcon>🗳️</LogoIcon>
-              <LogoText variant="h6">VoteHub</LogoText>
+              <LogoText variant="h6" themecolors={themeColors}>
+                VoteHub
+              </LogoText>
             </Logo>
 
             {/* Scrollable navigation buttons container */}
@@ -252,6 +245,7 @@ function Navigation({ role, handleLogout }) {
                 to="/"
                 startIcon={<HowToVoteIcon />}
                 active={isActive("/") ? 1 : 0}
+                themecolors={themeColors}
               >
                 Polls
               </NavButton>
@@ -265,6 +259,7 @@ function Navigation({ role, handleLogout }) {
                     to="/create"
                     startIcon={<AddCircleOutlineIcon />}
                     active={isActive("/create") ? 1 : 0}
+                    themecolors={themeColors}
                   >
                     Create Poll
                   </NavButton>
@@ -276,6 +271,11 @@ function Navigation({ role, handleLogout }) {
                   />
                 </>
               )}
+            </Box>
+
+            {/* Theme Toggle Button */}
+            <Box sx={{ flexShrink: 0, mr: 2 }}>
+              <ThemeToggle />
             </Box>
 
             {/* User menu section (avatar and dropdown) */}
@@ -290,9 +290,10 @@ function Navigation({ role, handleLogout }) {
                 open={Boolean(anchorEl)} // Open when anchorEl is set
                 onClose={handleMenuClose}
                 TransitionComponent={Fade} // Fade animation
+                themecolors={themeColors}
               >
                 {/* User role display (non-clickable) */}
-                <MenuItem disabled sx={{ opacity: 0.7 }}>
+                <MenuItem disabled>
                   <PersonIcon sx={{ mr: 1.5, fontSize: 20 }} />
                   {role === "admin" ? "Administrator" : "User"}
                 </MenuItem>
@@ -316,6 +317,28 @@ function Navigation({ role, handleLogout }) {
   );
 }
 
+// -------------------------- Main Content Wrapper -------------------------
+
+// Wrapper component for main content with theme support
+function MainContent({ children }) {
+  const { colors: themeColors } = useTheme();
+
+  return (
+    <Box
+      sx={{
+        marginTop: "80px", // Space for fixed navbar
+        minHeight: "100vh",
+        background: themeColors.bgPrimary, // Theme-aware background
+        color: themeColors.textSecondary,
+        padding: "20px",
+        transition: "background 0.3s ease, color 0.3s ease",
+      }}
+    >
+      {children}
+    </Box>
+  );
+}
+
 // -------------------------- Main App Component --------------------------
 
 function App() {
@@ -333,56 +356,50 @@ function App() {
   };
 
   return (
-    <Router>
-      {/* Conditional rendering based on authentication status */}
-      {!token ? (
-        // Routes for unauthenticated users (login/register only)
-        <Routes>
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/login"
-            element={<Login setToken={setToken} setRole={setRole} />}
-          />
-          {/* Redirect all other paths to register page */}
-          <Route path="*" element={<Navigate to="/register" />} />
-        </Routes>
-      ) : (
-        // Layout for authenticated users (navbar + content)
-        <>
-          {/* Navigation bar with role and logout handler */}
-          <Navigation role={role} handleLogout={handleLogout} />
-          {/* Main content area */}
-          <Box
-            sx={{
-              marginTop: "80px", // Space for fixed navbar
-              minHeight: "100vh",
-              background: "linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%)", // Dark gradient background
-              color: "#e2e8f0",
-              padding: "20px",
-            }}
-          >
-            {/* Routes for authenticated users */}
-            <Routes>
-              {/* Home page - poll list */}
-              <Route path="/" element={<PollList />} />
-              {/* Individual poll voting page */}
-              <Route path="/polls/:id" element={<PollDetail />} />
-              {/* Poll results page */}
-              <Route path="/polls/:id/results" element={<Results />} />
-              {/* Create poll page - admin only, redirects to home if not admin */}
-              <Route
-                path="/create"
-                element={
-                  role === "admin" ? <CreatePoll /> : <Navigate to="/" />
-                }
-              />
-              {/* Redirect all other paths to home */}
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          </Box>
-        </>
-      )}
-    </Router>
+    <ThemeProvider>
+      <Router>
+        {/* Conditional rendering based on authentication status */}
+        {!token ? (
+          // Routes for unauthenticated users (login/register only)
+          <Routes>
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/login"
+              element={<Login setToken={setToken} setRole={setRole} />}
+            />
+            {/* Redirect all other paths to register page */}
+            <Route path="*" element={<Navigate to="/register" />} />
+          </Routes>
+        ) : (
+          // Layout for authenticated users (navbar + content)
+          <>
+            {/* Navigation bar with role and logout handler */}
+            <Navigation role={role} handleLogout={handleLogout} />
+            {/* Main content area with theme support */}
+            <MainContent>
+              {/* Routes for authenticated users */}
+              <Routes>
+                {/* Home page - poll list */}
+                <Route path="/" element={<PollList />} />
+                {/* Individual poll voting page */}
+                <Route path="/polls/:id" element={<PollDetail />} />
+                {/* Poll results page */}
+                <Route path="/polls/:id/results" element={<Results />} />
+                {/* Create poll page - admin only, redirects to home if not admin */}
+                <Route
+                  path="/create"
+                  element={
+                    role === "admin" ? <CreatePoll /> : <Navigate to="/" />
+                  }
+                />
+                {/* Redirect all other paths to home */}
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+            </MainContent>
+          </>
+        )}
+      </Router>
+    </ThemeProvider>
   );
 }
 

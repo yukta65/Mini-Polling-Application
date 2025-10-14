@@ -36,6 +36,13 @@ export const ThemeProvider = ({ children }) => {
       bgGlass: "rgba(255, 255, 255, 0.7)",
       bgGlassHover: "rgba(255, 255, 255, 0.85)",
 
+      // Navbar colors
+      navbar:
+        "linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(248,250,252,0.8) 100%)",
+      navbarScrolled:
+        "linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%)",
+      menuBg: "rgba(255, 255, 255, 0.95)",
+
       // Text colors
       textPrimary: "#0f172a",
       textSecondary: "#475569",
