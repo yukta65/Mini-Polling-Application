@@ -6,6 +6,7 @@ import { styled } from "@mui/material/styles";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import PollIcon from "@mui/icons-material/Poll";
 
+// The main container with gradient background and animated circles
 const StyledBox = styled(Box)({
   display: "flex",
   justifyContent: "center",
@@ -37,50 +38,28 @@ const StyledBox = styled(Box)({
     animation: "pulse 6s ease-in-out infinite",
   },
   "@keyframes pulse": {
-    "0%, 100%": {
-      transform: "scale(1)",
-      opacity: 0.8,
-    },
-    "50%": {
-      transform: "scale(1.1)",
-      opacity: 0.5,
-    },
+    "0%, 100%": { transform: "scale(1)", opacity: 0.8 },
+    "50%": { transform: "scale(1.1)", opacity: 0.5 },
   },
 });
 
+// Floating animated icons on the background
 const FloatingIcon = styled(Box)({
   position: "absolute",
   color: "rgba(255, 255, 255, 0.15)",
   fontSize: "80px",
   animation: "float 8s ease-in-out infinite",
-  "&.icon-1": {
-    top: "10%",
-    left: "15%",
-    animationDelay: "0s",
-  },
-  "&.icon-2": {
-    top: "60%",
-    right: "10%",
-    animationDelay: "2s",
-  },
-  "&.icon-3": {
-    bottom: "15%",
-    left: "20%",
-    animationDelay: "4s",
-  },
+  "&.icon-1": { top: "10%", left: "15%", animationDelay: "0s" },
+  "&.icon-2": { top: "60%", right: "10%", animationDelay: "2s" },
+  "&.icon-3": { bottom: "15%", left: "20%", animationDelay: "4s" },
   "@keyframes float": {
-    "0%, 100%": {
-      transform: "translateY(0px) rotate(0deg)",
-    },
-    "33%": {
-      transform: "translateY(-30px) rotate(5deg)",
-    },
-    "66%": {
-      transform: "translateY(-15px) rotate(-5deg)",
-    },
+    "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
+    "33%": { transform: "translateY(-30px) rotate(5deg)" },
+    "66%": { transform: "translateY(-15px) rotate(-5deg)" },
   },
 });
 
+// The main login card with blur glass style
 const StyledPaper = styled(Paper)({
   padding: "45px",
   width: "420px",
@@ -97,6 +76,7 @@ const StyledPaper = styled(Paper)({
   },
 });
 
+// Top icon container with animation
 const IconContainer = styled(Box)({
   display: "flex",
   justifyContent: "center",
@@ -110,15 +90,12 @@ const IconContainer = styled(Box)({
     animation: "bounce 2s ease-in-out infinite",
   },
   "@keyframes bounce": {
-    "0%, 100%": {
-      transform: "translateY(0px)",
-    },
-    "50%": {
-      transform: "translateY(-10px)",
-    },
+    "0%, 100%": { transform: "translateY(0px)" },
+    "50%": { transform: "translateY(-10px)" },
   },
 });
 
+// Styled input fields with focus and hover animations
 const StyledTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
     borderRadius: "14px",
@@ -145,6 +122,7 @@ const StyledTextField = styled(TextField)({
   },
 });
 
+// Styled button for login with gradient and hover animation
 const StyledButton = styled(Button)({
   borderRadius: "14px",
   padding: "14px",
@@ -162,6 +140,7 @@ const StyledButton = styled(Button)({
   },
 });
 
+// Title text style for the page
 const Title = styled(Typography)({
   fontWeight: "800",
   fontSize: "32px",
@@ -173,6 +152,7 @@ const Title = styled(Typography)({
   letterSpacing: "-0.5px",
 });
 
+// Subtitle under title
 const Subtitle = styled(Typography)({
   color: "#64748b",
   fontSize: "15px",
@@ -180,6 +160,7 @@ const Subtitle = styled(Typography)({
   fontWeight: "500",
 });
 
+// Divider line between login and register link
 const Divider = styled(Box)({
   display: "flex",
   alignItems: "center",
@@ -198,11 +179,14 @@ const Divider = styled(Box)({
   },
 });
 
+// Login component main function
 function Login({ setToken, setRole }) {
+  // State variables for input fields
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  // Function to handle user login
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -217,8 +201,10 @@ function Login({ setToken, setRole }) {
     }
   };
 
+  // Main return layout of login page
   return (
     <StyledBox>
+      {/* Background floating icons */}
       <FloatingIcon className="icon-1">
         <HowToVoteIcon fontSize="inherit" />
       </FloatingIcon>
@@ -229,6 +215,7 @@ function Login({ setToken, setRole }) {
         <HowToVoteIcon fontSize="inherit" />
       </FloatingIcon>
 
+      {/* Login card container */}
       <StyledPaper elevation={0}>
         <IconContainer>
           <HowToVoteIcon className="vote-icon" />
@@ -239,6 +226,7 @@ function Login({ setToken, setRole }) {
         </Title>
         <Subtitle align="center">Login to create and vote on polls</Subtitle>
 
+        {/* Login form */}
         <form onSubmit={handleLogin}>
           <StyledTextField
             label="Username"
@@ -262,10 +250,12 @@ function Login({ setToken, setRole }) {
           </StyledButton>
         </form>
 
+        {/* Divider between login and register */}
         <Divider>
           <span>OR</span>
         </Divider>
 
+        {/* Register redirect link */}
         <Typography
           align="center"
           variant="body2"
