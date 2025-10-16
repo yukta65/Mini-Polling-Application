@@ -1,55 +1,62 @@
-// Import the configured Express application from app.js
-const app = require("./app");
+// ----------------------- Load Environment Variables -----------------------
+const dotenv = require("dotenv");
 
-// Import Node.js HTTP module to create HTTP server
+// Use .env.production on Render, .env.local locally
+const envFile =
+  process.env.NODE_ENV === "production" ? ".env.production" : ".env.local";
+dotenv.config({ path: envFile });
+
+console.log(`Using environment: ${envFile}`);
+
+// ----------------------- Import Dependencies -----------------------
 const http = require("http");
+const app = require("./app"); // Your Express app
+const { Server } = require("socket.io");
+const { Sequelize } = require("sequelize");
 
-// Create HTTP server instance with Express app
-// This wraps the Express app to enable Socket.io integration
+// ----------------------- Configure Sequelize -----------------------
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASS,
+  {
+    host: process.env.DB_HOST,
+    dialect: process.env.DB_DIALECT,
+    logging: false, // Set to true if you want SQL query logs
+  }
+);
+
+// Test database connection
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Database connected successfully!");
+  } catch (err) {
+    console.error("Unable to connect to the database:", err);
+  }
+})();
+
+// ----------------------- Create HTTP Server -----------------------
 const server = http.createServer(app);
 
-// Import Socket.io Server class for real-time WebSocket communication
-const { Server } = require("socket.io");
-
-// Create Socket.io server instance attached to HTTP server
-// CORS configuration allows connections from any origin (*)
-// In production, specify exact frontend URL for security: origin: "http://localhost:3000"
-const io = new Server(server, { cors: { origin: "*" } });
-
-// ----------------------- Server Configuration -----------------------
-
-// Define server port from environment variable or default to 5000
-// Environment variable allows flexible deployment (Heroku, AWS, etc.)
-const PORT = process.env.PORT || 5000;
-
-// ----------------------- Socket.io Event Handling -----------------------
-
-// Listen for client connections via WebSocket
-// This event fires whenever a user connects to the Socket.io server
-io.on("connection", (socket) => {
-  console.log("A user connected");
-  // Socket connection enables real-time features like:
-  // - Live poll result updates (when someone votes)
-  // - Real-time vote count changes
-  // - Instant UI updates without page refresh
+// ----------------------- Configure Socket.io -----------------------
+const io = new Server(server, {
+  cors: { origin: "*" }, // In production, specify your frontend URL
 });
 
-// ----------------------- Make Socket.io Available to Routes -----------------------
+io.on("connection", (socket) => {
+  console.log("A user connected via WebSocket");
+  // Example: handle disconnection
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
+  });
+});
 
-// Attach Socket.io instance to Express app
-// This makes 'io' accessible in route handlers via req.app.get('io')
-// Controllers can emit events to connected clients for real-time updates
-// Example: req.app.get('io').emit('pollUpdated', { pollId: 1 })
+// Make Socket.io instance available in Express routes
 app.set("io", io);
 
 // ----------------------- Start Server -----------------------
-
-// Start the HTTP server (with Express app and Socket.io) on specified port
-// Must use server.listen() instead of app.listen() to enable Socket.io
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  // Server is now:
-  // - Accepting HTTP requests (REST API endpoints)
-  // - Accepting WebSocket connections (real-time updates)
-  // - Ready to serve the polling application
 });
