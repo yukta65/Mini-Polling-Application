@@ -21,6 +21,18 @@ A modern, full-stack polling application with real-time updates, user authentica
 - [Security](#security)
 - [Contributing](#contributing)
 
+## 📸 Project Screenshots
+
+Here’s how the app looks:
+
+<p align="center">
+  <img src="./images/homepage.png" alt="Homepage Screenshot" width="500"/>
+</p>
+
+<p align="center">
+  <img src="./images/login.png" alt="Login Page" width="400"/>
+</p>
+
 ## ✨ Features
 
 ### Core Functionality
