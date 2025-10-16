@@ -26,11 +26,26 @@ A modern, full-stack polling application with real-time updates, user authentica
 Here’s how the app looks:
 
 <p align="center">
-  <img src="./images/homepage.png" alt="Homepage Screenshot" width="500"/>
+  <img src="./images/signup page.png" alt="Homepage Screenshot" width="500"/>
 </p>
 
 <p align="center">
-  <img src="./images/login.png" alt="Login Page" width="400"/>
+  <img src="./images/sign in page.png" alt="Login Page" width="400"/>
+</p>
+<p align="center">
+  <img src="./images/home screen of admin.png" alt="Login Page" width="400"/>
+</p>
+<p align="center">
+  <img src="./images/user home screen.png" alt="Login Page" width="400"/>
+</p>
+<p align="center">
+  <img src="./images/create poll in dark mode.png" alt="Login Page" width="400"/>
+</p>
+<p align="center">
+  <img src="./images/create poll in lightmode.png" alt="Login Page" width="400"/>
+</p>
+<p align="center">
+  <img src="./images/vote poll page.png" alt="Login Page" width="400"/>
 </p>
 
 ## ✨ Features
